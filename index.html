@@ -1,3 +1,15 @@
+<!--
+═══════════════════════════════════════════════════════════════
+  © 2025 EV vs ICE Ownership Cost Calculator - @ferrarirules86
+  All Rights Reserved
+
+  This calculator and its algorithms are proprietary.
+  Unauthorized copying, modification, or distribution is prohibited.
+
+  If you're reading this code and considering copying it:
+  Please respect intellectual property rights and create your own.
+═══════════════════════════════════════════════════════════════
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -189,12 +201,43 @@
     background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
     color: #721c24 !important;
   }
+
+  /* Anti-copy styling */
+  * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  input, select, textarea {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+  }
+
+  body::before {
+    content: "© 2025 EV Calculator";
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    font-size: 8px;
+    color: rgba(0,0,0,0.1);
+    pointer-events: none;
+    z-index: 9999;
+  }
 </style>
 
   <!-- html2canvas library -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" 
           onload="console.log('html2canvas loaded successfully')"
           onerror="console.error('Failed to load html2canvas')"></script>
+  <meta name="author" content="EV vs ICE Calculator">
+  <meta name="copyright" content="© 2025 EV vs ICE Ownership Cost Calculator. All rights reserved.">
+  <meta name="robots" content="noarchive">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EV vs ICE Ownership Cost Calculator">
 </head>
 <body>
 
@@ -1156,5 +1199,115 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
+
+<!-- Copyright & Attribution -->
+<div style="text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); margin-top: 40px; border-top: 3px solid #34a853;">
+  <p style="margin: 8px 0; font-size: 15px; color: #333; font-weight: 600;">
+    🚗 EV vs ICE Ownership Cost Calculator
+  </p>
+  <p style="margin: 8px 0; font-size: 13px; color: #666;">
+    © 2025 All Rights Reserved | Made with ❤️ for Indian EV Enthusiasts
+  </p>
+  <p style="margin: 8px 0; font-size: 11px; color: #999; font-style: italic;">
+    ⚠️ Unauthorized copying, distribution, or reproduction is prohibited
+  </p>
+</div>
+
+<script>
+// Copyright Protection Script
+(function() {
+  'use strict';
+
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  }, false);
+
+  // Disable keyboard shortcuts for viewing/saving source
+  document.addEventListener('keydown', function(e) {
+    // Ctrl+U (View Source)
+    if (e.ctrlKey && e.keyCode === 85) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+S (Save Page)
+    if (e.ctrlKey && e.keyCode === 83) {
+      e.preventDefault();
+      return false;
+    }
+    // F12 (Developer Tools)
+    if (e.keyCode === 123) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+I (DevTools)
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+C (Inspect Element)
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+      e.preventDefault();
+      return false;
+    }
+  }, false);
+
+  // Disable text selection (but allow in input fields)
+  document.addEventListener('selectstart', function(e) {
+    if (e.target.tagName === 'INPUT' || 
+        e.target.tagName === 'SELECT' || 
+        e.target.tagName === 'TEXTAREA') {
+      return true;
+    }
+    e.preventDefault();
+    return false;
+  }, false);
+
+  // Disable drag and drop
+  document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+    return false;
+  }, false);
+
+  // Console copyright warning
+  console.clear();
+  console.log('%c⚠️ COPYRIGHT NOTICE ⚠️', 
+    'color: red; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);');
+  console.log('%c© 2025 EV vs ICE Ownership Cost Calculator', 
+    'font-size: 16px; font-weight: bold; color: #34a853;');
+  console.log('%cAll Rights Reserved', 
+    'font-size: 14px; color: #666;');
+  console.log('%c
+This calculator is proprietary software.', 
+    'font-size: 12px; color: #333;');
+  console.log('%cUnauthorized copying, modification, or distribution is prohibited.', 
+    'font-size: 12px; color: #d32f2f; font-weight: bold;');
+  console.log('%c
+If you're interested in using this calculator, please contact the owner.', 
+    'font-size: 11px; color: #666; font-style: italic;');
+
+  // Detect DevTools open (basic detection)
+  var devtools = {open: false};
+  var threshold = 160;
+  var check = setInterval(function() {
+    if (window.outerWidth - window.innerWidth > threshold || 
+        window.outerHeight - window.innerHeight > threshold) {
+      if (!devtools.open) {
+        console.clear();
+        console.log('%c⚠️ Developer Tools Detected', 'color: red; font-size: 20px; font-weight: bold;');
+        console.log('%cThis calculator is copyright protected.', 'font-size: 14px;');
+      }
+      devtools.open = true;
+    }
+  }, 500);
+
+})();
+</script>
 </body>
 </html>
