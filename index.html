@@ -199,9 +199,34 @@
 <body>
 
 <div class="container">
-  <div class="header">
-    EV vs ICE Ownership Cost Calculator
-    <div class="header-subtitle">Compare lifetime Ownership costs and savings between Electric and ICE vehicles</div>
+  <div class="header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 25px 30px;">
+    <div style="flex: 1; min-width: 300px;">
+      <div style="font-size: 28px; font-weight: bold; color: #1a1a1a; margin-bottom: 5px;">
+        🚗 EV vs ICE Ownership Cost Calculator
+      </div>
+      <div class="header-subtitle" style="font-size: 14px; color: #666; font-weight: normal;">
+        Compare lifetime Ownership costs and savings between Electric and ICE vehicles
+      </div>
+    </div>
+    <button id="resetBtn" style="
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+      border: none;
+      padding: 11px 26px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      font-family: inherit;
+      white-space: nowrap;
+      margin-top: 10px;
+    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 5px 10px rgba(0,0,0,0.15)'"
+       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 3px 6px rgba(0,0,0,0.1)'">
+      🔄 Reset Calculator
+    </button>
+  </div>
   </div>
 
   <table>
@@ -284,8 +309,8 @@
     </tr>
     <tr>
       <td class="label-cell">Vehicle Name</td>
-      <td class="input-cell" colspan="2"><input type="text" style="text-align: center;" id="evName" placeholder="e.g., Tata Nexon EV"></td>
-      <td class="input-cell" colspan="2"><input type="text" style="text-align: center;" id="iceName" placeholder="e.g., Tata Nexon Petrol"></td>
+      <td class="input-cell" colspan="2"><input type="text" style="text-align: center;" id="evName" placeholder="e.g., EV name"></td>
+      <td class="input-cell" colspan="2"><input type="text" style="text-align: center;" id="iceName" placeholder="e.g., ICE name"></td>
     </tr>
     <tr>
       <td class="label-cell">Fuel Type</td>
@@ -314,7 +339,7 @@
       <td class="input-cell" colspan="2"><input type="text" id="iceRto" placeholder="e.g., 2,00,000"></td>
     </tr>
     <tr>
-      <td class="result-label">Insurance (4.3% of Ex-Showroom)</td>
+      <td class="result-label">Insurance</td>
       <td class="computed-cell mono" colspan="2" id="evIns">—</td>
       <td class="computed-cell mono" colspan="2" id="iceIns">—</td>
     </tr>
@@ -1088,6 +1113,44 @@ document.getElementById('downloadBtn').addEventListener('click', function() {
     }, 3000);
   });
 });
+
+
+// Reset calculator function
+function resetCalculator() {
+  if (!confirm('Reset all values to default?\n\nThis will clear all inputs except investment ROI, Loan and Depriciation rates.')) {
+    return;
+  }
+
+  const inputs = document.querySelectorAll('input[type="text"]');
+  inputs.forEach(input => {
+    if (input.id === 'roiLow' || input.id === 'roiMed' || input.id === 'roiHigh' || input.id === 'loanTenure' || input.id === 'loanRoi' || input.id === 'depEv' || input.id === 'depIce') {
+      return; // Keep ROI prefilled
+    }
+    input.value = '';
+  });
+
+  const selects = document.querySelectorAll('select');
+  selects.forEach(select => select.selectedIndex = 0);
+
+  if (typeof recalc === 'function') recalc();
+
+  const btn = document.getElementById('resetBtn');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Reset Complete!';
+    btn.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
+    }, 2000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('resetBtn');
+  if (btn) btn.addEventListener('click', resetCalculator);
+});
+
 </script>
 
 </body>
