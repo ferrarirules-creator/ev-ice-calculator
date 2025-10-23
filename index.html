@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EV vs ICE Ownership Cost Calculator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+    background: #f5f7fa;
+    padding: 30px 20px;
+    min-height: 100vh;
+  }
+  .container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    background: white; 
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+  }
+  .header {
+    background: linear-gradient(135deg, #2d8659 0%, #1e5631 100%);
+    color: white;
+    padding: 24px 30px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	text-align: center;
+  }
+  .header-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 4px;
+	text-align: center;
+  }
+  table { 
+    width: 100%; 
+    border-collapse: collapse; 
+  }
+  td { 
+    border: 1px solid #e5e7eb;
+    padding: 12px 16px; 
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  .section-header {
+    background: linear-gradient(135deg, #34a853 0%, #2d8659 100%);
+    color: white;
+    font-weight: 600;
+    padding: 14px 16px;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-size: 13px;
+  }
+  .label-cell {
+    background: #f9fafb;
+    font-weight: 500;
+    width: 30%;
+    color: #374151;
+  }
+  .input-cell {
+    background: white;
+    padding: 6px 12px;
+    position: relative;
+  }
+  .input-cell:hover {
+    background: #f9fafb;
+  }
+  .computed-cell {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    font-weight: 600;
+    text-align: center;
+    color: #1b5e20;
+  }
+  .highlight-cell {
+    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+    font-weight: 700;
+    text-align: center;
+    color: #f57f17;
+    font-size: 15px;
+  }
+  .center-header {
+    background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+    /* Positive/Negative conditional colors */
+  .positive-value {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    color: #155724 !important;
+  }
+  .negative-value {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
+    color: #721c24 !important;
+  }
+
+  input::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  input:focus::placeholder {
+    opacity: 0.5;
+  }
+
+  input {
+    width: 100%;
+    border: 2px solid transparent;
+    background: transparent;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 6px;
+    text-align: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  input:focus {
+    outline: none;
+    border-color: #34a853;
+    background: #f0f9f4;
+  }
+  input:hover {
+    background: #fafafa;
+  }
+  .input-with-suffix {
+    position: relative;
+  }
+  .input-with-suffix input {
+    padding-right: 28px;
+  }
+  .input-with-suffix::after {
+    content: '%';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #34a853;
+    font-weight: 600;
+  }
+  .result-label {
+    background: #f3f4f6;
+    font-weight: 600;
+    color: #4b5563;
+  }
+  .empty-row td {
+    border: none;
+    padding: 8px;
+    background: white;
+  }
+  .mono {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-size: 13px;
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 15px 10px; }
+    .header { padding: 20px; font-size: 22px; }
+    td { padding: 10px 12px; font-size: 13px; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .container { animation: fadeIn 0.5s ease-out; }
+
+  tr:hover td { background-color: rgba(46, 125, 50, 0.02); }
+  tr:hover .label-cell { background-color: #f0f9f4; }
+  
+  /* Positive/Negative conditional colors */
+  .positive-value {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    color: #155724 !important;
+  }
+  .negative-value {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
+    color: #721c24 !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    EV vs ICE Ownership Cost Calculator
+    <div class="header-subtitle">Compare lifetime Ownership costs and savings between Electric and ICE vehicles</div>
+  </div>
+
+  <table>
+    <!-- Driving Parameters -->
+    <tr><td colspan="5" class="section-header">🚗 Driving Parameters</td></tr>
+    <tr>
+      <td class="label-cell"></td>
+      <td class="center-header" colspan="2">City</td>
+      <td class="center-header" colspan="2">Highway</td>
+    </tr>
+    <tr>
+      <td class="label-cell">What is your driving split? (%)</td>
+      <td class="input-cell input-with-suffix" colspan="2"><input type="text" id="cityShare" placeholder="80"></td>
+      <td class="input-cell input-with-suffix" colspan="2"><input type="text" id="hwyShare" placeholder="20"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">What is your monthly running? (in kms)</td>
+      <td class="input-cell" colspan="4"><input type="text" id="monthlyKm" placeholder="e.g., 1,000"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Ownership Duration in years</td>
+      <td class="input-cell" colspan="4"><input type="text" id="years" placeholder="7"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Select State/UT</td>
+      <td class="input-cell" colspan="4">
+        <select id="stateSelect" style="width: 100%; padding: 8px; border: 2px solid #34a853; border-radius: 6px; font-size: 14px; font-family: inherit; background: white; cursor: pointer; text-align: center; text-align-last: center;">
+          <option value="">-- Select your state --</option>
+          <option value="Andaman & Nicobar">Andaman & Nicobar</option>
+          <option value="Andhra Pradesh">Andhra Pradesh</option>
+          <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+          <option value="Assam">Assam</option>
+          <option value="Bihar">Bihar</option>
+          <option value="Chandigarh (UT)">Chandigarh (UT)</option>
+          <option value="Chhattisgarh">Chhattisgarh</option>
+          <option value="Dadra & Nagar Haveli">Dadra & Nagar Haveli</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Goa">Goa</option>
+          <option value="Gujarat">Gujarat</option>
+          <option value="Haryana">Haryana</option>
+          <option value="Himachal Pradesh">Himachal Pradesh</option>
+          <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+          <option value="Jharkhand">Jharkhand</option>
+          <option value="Karnataka">Karnataka</option>
+          <option value="Kerala">Kerala</option>
+          <option value="Ladakh">Ladakh</option>
+          <option value="Lakshadweep">Lakshadweep</option>
+          <option value="Madhya Pradesh">Madhya Pradesh</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Manipur">Manipur</option>
+          <option value="Meghalaya">Meghalaya</option>
+          <option value="Mizoram">Mizoram</option>
+          <option value="Nagaland">Nagaland</option>
+          <option value="Odisha">Odisha</option>
+          <option value="Puducherry">Puducherry</option>
+          <option value="Punjab">Punjab</option>
+          <option value="Rajasthan">Rajasthan</option>
+          <option value="Sikkim">Sikkim</option>
+          <option value="Tamil Nadu">Tamil Nadu</option>
+          <option value="Telangana">Telangana</option>
+          <option value="Tripura">Tripura</option>
+          <option value="Uttar Pradesh">Uttar Pradesh</option>
+          <option value="Uttarakhand">Uttarakhand</option>
+          <option value="West Bengal">West Bengal</option>
+        </select>
+      </td>
+    </tr>
+
+    
+
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Vehicle Details -->
+    <tr><td colspan="5" class="section-header">🚗 Vehicle Details</td></tr>
+    <tr>
+      <td class="label-cell"></td>
+      <td class="center-header" colspan="2">Electric Vehicle⚡</td>
+      <td class="center-header" colspan="2">ICE Vehicle ⛽</td>
+    </tr>
+    <tr>
+      <td class="label-cell">Vehicle Name</td>
+      <td class="input-cell" colspan="2"><input type="text" style="text-align: center;" id="evName" placeholder="e.g., Tata Nexon EV"></td>
+      <td class="input-cell" colspan="2"><input type="text" style="text-align: center;" id="iceName" placeholder="e.g., Tata Nexon Petrol"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Fuel Type</td>
+      <td class="input-cell" colspan="2"></td>
+      <td class="input-cell" colspan="2">
+        <select id="fuelTypeSelect" style="width: 100%; padding: 8px; border: 2px solid #34a853; border-radius: 6px; font-size: 14px; font-family: inherit; background: white; cursor: pointer; text-align: center; text-align-last: center;">
+          <option value="petrol">Petrol</option>
+          <option value="diesel">Diesel</option>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="label-cell">Ex-Showroom Price (₹)</td>
+      <td class="input-cell" colspan="2"><input type="text" id="evEx" placeholder="e.g., 15,00,000"></td>
+      <td class="input-cell" colspan="2"><input type="text" id="iceEx" placeholder="e.g., 12,00,000"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Discounts (if any) (₹)</td>
+      <td class="input-cell" colspan="2"><input type="text" id="evDisc" placeholder="0"></td>
+      <td class="input-cell" colspan="2"><input type="text" id="iceDisc" placeholder="0"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">RTO (₹)</td>
+      <td class="input-cell" colspan="2"><input type="text" id="evRto" placeholder="e.g., 16,000"></td>
+      <td class="input-cell" colspan="2"><input type="text" id="iceRto" placeholder="e.g., 2,00,000"></td>
+    </tr>
+    <tr>
+      <td class="result-label">Insurance (4.3% of Ex-Showroom)</td>
+      <td class="computed-cell mono" colspan="2" id="evIns">—</td>
+      <td class="computed-cell mono" colspan="2" id="iceIns">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">TCS (1% of Ex-Showroom)</td>
+      <td class="computed-cell mono" colspan="2" id="evTcs">—</td>
+      <td class="computed-cell mono" colspan="2" id="iceTcs">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">On-road Price</td>
+      <td class="computed-cell mono" colspan="2" id="onroadEv">—</td>
+      <td class="computed-cell mono" colspan="2" id="onroadIce">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">Price Delta (EV - ICE)</td>
+      <td class="highlight-cell mono" colspan="4" id="delta">—</td>
+    </tr>
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Running Cost -->
+    <tr><td colspan="5" class="section-header">⚡ Running Costs</td></tr>
+    <tr>
+      <td class="label-cell"></td>
+      <td class="center-header">⚡ City</td>
+      <td class="center-header">⚡ Highway</td>
+      <td class="center-header">⛽ City</td>
+      <td class="center-header">⛽ Highway</td>
+    </tr>
+    <tr>
+      <td class="label-cell">Fuel (₹/L) / Electricity (₹/kWh)</td>
+      <td class="input-cell"><input type="text" id="ePriceCity" placeholder="8"></td>
+      <td class="input-cell"><input type="text" id="ePriceHwy" placeholder="21"></td>
+      <td class="input-cell"><input type="text" id="petrolCity" placeholder="e.g., 95"></td>
+      <td class="input-cell"><input type="text" id="petrolHwy" placeholder="e.g., 95"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Efficiency (km/kWh) / Economy (km/L)</td>
+      <td class="input-cell"><input type="text" id="evEffCity" placeholder="8"></td>
+      <td class="input-cell"><input type="text" id="evEffHwy" placeholder="7"></td>
+      <td class="input-cell"><input type="text" id="iceCity" placeholder="10"></td>
+      <td class="input-cell"><input type="text" id="iceHwy" placeholder="14"></td>
+    </tr>
+    <tr>
+      <td class="result-label">Running cost per km (₹)</td>
+      <td class="computed-cell mono" id="evCostCity">—</td>
+      <td class="computed-cell mono" id="evCostHwy">—</td>
+      <td class="computed-cell mono" id="iceCostCity">—</td>
+      <td class="computed-cell mono" id="iceCostHwy">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">Monthly Running cost (₹)</td>
+      <td class="computed-cell mono" id="evMonthCity">—</td>
+      <td class="computed-cell mono" id="evMonthHwy">—</td>
+      <td class="computed-cell mono" id="iceMonthCity">—</td>
+      <td class="computed-cell mono" id="iceMonthHwy">—</td>
+    </tr>
+    <tr>
+      <td class="label-cell"></td>
+      <td class="center-header" colspan="2">EV Total ⚡</td>
+      <td class="center-header" colspan="2">ICE Total ⛽</td>
+    </tr>
+
+    <tr>
+      <td class="result-label">Total Monthly running cost (₹)</td>
+      <td class="computed-cell mono" colspan="2" id="evTotal">—</td>
+      <td class="computed-cell mono" colspan="2" id="iceTotal">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">Monthly Savings (₹)</td>
+      <td class="highlight-cell mono" colspan="4" id="saveMo">—</td>
+    </tr>
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Investment Savings -->
+    <tr><td colspan="5" class="section-header">💰 Investment Returns on Fuel Savings</td></tr>
+    <tr>
+      <td class="label-cell">Risk Level</td>
+      <td class="center-header">Low (RD)</td>
+      <td class="center-header">Medium (Debt)</td>
+      <td class="center-header" colspan="2">High (Equity/MF)</td>
+    </tr>
+    <tr>
+      <td class="label-cell">Rate of Interest (%)</td>
+      <td class="input-cell input-with-suffix"><input type="text" id="roiLow" value="6.5"></td>
+      <td class="input-cell input-with-suffix"><input type="text" id="roiMed" value="9"></td>
+      <td class="input-cell input-with-suffix" colspan="2"><input type="text" id="roiHigh" value="12"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Tenure (months) - Auto-synced with years</td>
+      <td class="computed-cell mono" colspan="4" id="months">84</td>
+    </tr>
+    <tr>
+      <td class="result-label">Maturity value (₹)</td>
+      <td class="computed-cell mono" id="matLow">—</td>
+      <td class="computed-cell mono" id="matMed">—</td>
+      <td class="computed-cell mono" colspan="2" id="matHigh">—</td>
+    </tr>
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Loan Interest -->
+    <tr><td colspan="5" class="section-header">💳 Loan on Price Delta</td></tr>
+    <tr>
+      <td class="label-cell">Loan Rate of Interest (%)</td>
+      <td class="input-cell input-with-suffix" colspan="4"><input type="text" id="loanRoi" value="8.75"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Tenure (months)</td>
+      <td class="input-cell" colspan="4"><input type="text" id="loanTenure" value="60"></td>
+    </tr>
+    <tr>
+      <td class="result-label">Interest Paid (₹)</td>
+      <td class="computed-cell mono" colspan="4" id="loanInt">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">Total amount paid (₹)</td>
+      <td class="computed-cell mono" colspan="4" id="loanTot">—</td>
+    </tr>
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Total Savings -->
+	<tr><td colspan="5" class="section-header">📈 Savings without Depreciation</td></tr>
+    <tr>
+      <td class="label-cell">Investment Scenario</td>
+      <td class="center-header">Low (RD)</td>
+      <td class="center-header">Medium (Debt)</td>
+      <td class="center-header" colspan="2">High (Equity/MF)</td>
+    </tr>
+    <tr>
+      <td class="result-label">Savings (Investment - Loan) (₹)</td>
+      <td class="highlight-cell mono" id="savLow">—</td>
+      <td class="highlight-cell mono" id="savMed">—</td>
+      <td class="highlight-cell mono" colspan="2" id="savHigh">—</td>
+    </tr>
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Depreciation -->
+    <tr><td colspan="5" class="section-header">📉 Depreciation & Resale Value</td></tr>
+    <tr>
+      <td class="label-cell"></td>
+      <td class="center-header" colspan="2">Electric Vehicle </td>
+      <td class="center-header" colspan="2">ICE Vehicle ⛽</td>
+    </tr>
+    <tr>
+      <td class="label-cell">Depreciation rate per year (%)</td>
+      <td class="input-cell input-with-suffix" colspan="2"><input type="text" id="depEv" value="20"></td>
+      <td class="input-cell input-with-suffix" colspan="2"><input type="text" id="depIce" value="15"></td>
+    </tr>
+    <tr>
+      <td class="result-label">Residual Value after <span id="yearsDisplay">7</span> years (₹)</td>
+      <td class="computed-cell mono" colspan="2" id="resEv">—</td>
+      <td class="computed-cell mono" colspan="2" id="resIce">—</td>
+    </tr>
+    <tr>
+      <td class="result-label">Resale Value Delta (ICE - EV) (₹)</td>
+      <td class="highlight-cell mono" colspan="4" id="deltaRes">—</td>
+    </tr>
+
+    <tr class="empty-row"><td colspan="5"></td></tr>
+
+    <!-- Final Results -->
+    <tr><td colspan="5" class="section-header">🎯 Final <span id="yearsDisplay2">7</span>-Year Outcome</td></tr>
+    <tr>
+      <td class="label-cell">Investment Scenario</td>
+      <td class="center-header">Low (RD)</td>
+      <td class="center-header">Medium (Debt)</td>
+      <td class="center-header" colspan="2">High (Equity/MF)</td>
+    </tr>
+    <tr>
+      <td class="result-label">Overall Net Savings (₹)</td>
+      <td class="highlight-cell mono" id="overallLow" style="font-size: 16px;">—</td>
+      <td class="highlight-cell mono" id="overallMed" style="font-size: 16px;">—</td>
+      <td class="highlight-cell mono" colspan="2" id="overallHigh" style="font-size: 16px;">—</td>
+    </tr>
+  </table>
+
+  <!-- Assumptions and Disclaimers -->
+  <div style="padding: 30px; background: #f9fafb; border-top: 2px solid #e5e7eb;">
+    <h3 style="color: #2d8659; font-size: 18px; font-weight: 600; margin-bottom: 16px;">📋 Assumptions & Notes</h3>
+
+    <div style="background: white; border-left: 4px solid #34a853; padding: 16px; margin-bottom: 12px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <strong style="color: #2d8659;">🔧 Maintenance Costs:</strong>
+      <p style="margin: 8px 0 0 0; color: #4b5563; line-height: 1.6;">Maintenance costs have not been compared as they vary OEM to OEM. EVs in general have lower maintenance costs than ICE cars.</p>
+    </div>
+
+    <div style="background: white; border-left: 4px solid #34a853; padding: 16px; margin-bottom: 12px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <strong style="color: #2d8659;">🔋 Battery Warranty & Longevity:</strong>
+      <p style="margin: 8px 0 0 0; color: #4b5563; line-height: 1.6;">EV batteries are under warranty for Lifetime (15 years) and unlimited kms or they get 8 years or 1,60,000 kms. Hence there is no need to consider battery replacement costs. EV batteries have high cycle life so they are good for 3,00,000 kms easily.</p>
+    </div>
+
+    <div style="background: white; border-left: 4px solid #34a853; padding: 16px; margin-bottom: 12px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <strong style="color: #2d8659;">⛽ Fuel & Electricity Prices:</strong>
+      <p style="margin: 8px 0 0 0; color: #4b5563; line-height: 1.6;">Fuel and Electricity prices have been assumed to be constant as the same basic price inflation will apply to both.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const roadTax = {
+  'Karnataka': {
+    type: 'slab',
+    petrol: [[500000, 0.13], [1000000, 0.14], [2000000, 0.17], [Infinity, 0.18]],
+    diesel: [[500000, 0.15], [1000000, 0.16], [2000000, 0.19], [Infinity, 0.20]],
+    ev: [[2500000, 0.0], [Infinity, 0.10]]
+  },
+  'Maharashtra': {
+    type: 'slab',
+    petrol: [[1000000, 0.11], [2000000, 0.12], [Infinity, 0.13]],
+    diesel: [[1000000, 0.13], [2000000, 0.14], [Infinity, 0.15]],
+    ev: 0.0
+  },
+  'Delhi': {
+    type: 'slab',
+    petrol: [[600000, 0.04], [1000000, 0.07], [Infinity, 0.10]],
+    diesel: [[600000, 0.0625], [1000000, 0.0875], [Infinity, 0.125]],
+    ev: 0.0
+  },
+  'Haryana': {
+    type: 'slab',
+    petrol: [[600000, 0.05], [2000000, 0.08], [Infinity, 0.10]],
+    diesel: [[600000, 0.05], [2000000, 0.08], [Infinity, 0.10]],
+    ev: [[600000, 0.05], [2000000, 0.08], [Infinity, 0.10]]
+  },
+  'Kerala': {
+    type: 'slab',
+    petrol: [[500000, 0.06], [1000000, 0.08], [2000000, 0.15], [Infinity, 0.20]],
+    diesel: [[500000, 0.08], [1000000, 0.10], [2000000, 0.17], [Infinity, 0.20]],
+    ev: [[1500000, 0.05], [2000000, 0.08], [Infinity, 0.10]]
+  },
+  'Tamil Nadu': {type: 'flat', petrol: 0.10, diesel: 0.12, ev: 0.00},
+  'Punjab': {type: 'flat', petrol: 0.08, diesel: 0.09, ev: 0.04},
+  'Uttar Pradesh': {type: 'flat', petrol: 0.08, diesel: 0.10, ev: 0.06},
+  'Uttarakhand': {type: 'flat', petrol: 0.08, diesel: 0.10, ev: 0.04},
+  'Himachal Pradesh': {type: 'flat', petrol: 0.025, diesel: 0.045, ev: 0.0},
+  'Jammu & Kashmir': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'West Bengal': {type: 'flat', petrol: 0.10, diesel: 0.125, ev: 0.05},
+  'Bihar': {type: 'flat', petrol: 0.07, diesel: 0.09, ev: 0.03},
+  'Jharkhand': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'Odisha': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'Assam': {type: 'flat', petrol: 0.04, diesel: 0.06, ev: 0.02},
+  'Meghalaya': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'Tripura': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'Manipur': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'Nagaland': {type: 'flat', petrol: 0.05, diesel: 0.07, ev: 0.02},
+  'Mizoram': {type: 'flat', petrol: 0.05, diesel: 0.07, ev: 0.02},
+  'Arunachal Pradesh': {type: 'flat', petrol: 0.03, diesel: 0.05, ev: 0.02},
+  'Sikkim': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.03},
+  'Gujarat': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.04},
+  'Rajasthan': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.05},
+  'Goa': {type: 'flat', petrol: 0.08, diesel: 0.10, ev: 0.04},
+  'Andhra Pradesh': {type: 'flat', petrol: 0.12, diesel: 0.14, ev: 0.06},
+  'Telangana': {type: 'flat', petrol: 0.12, diesel: 0.14, ev: 0.06},
+  'Madhya Pradesh': {type: 'flat', petrol: 0.08, diesel: 0.10, ev: 0.00},
+  'Chhattisgarh': {type: 'flat', petrol: 0.07, diesel: 0.09, ev: 0.04},
+  'Chandigarh (UT)': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.0},
+  'Puducherry': {type: 'flat', petrol: 0.06, diesel: 0.08, ev: 0.04},
+  'Andaman & Nicobar': {type: 'flat', petrol: 0.05, diesel: 0.07, ev: 0.02},
+  'Lakshadweep': {type: 'flat', petrol: 0.05, diesel: 0.07, ev: 0.02},
+  'Ladakh': {type: 'flat', petrol: 0.04, diesel: 0.06, ev: 0.0},
+  'Dadra & Nagar Haveli': {type: 'flat', petrol: 0.025, diesel: 0.035, ev: 0.0}
+};
+
+
+
+const stateData = {
+  'Tamil Nadu': { petrol: 100.75, diesel: 92.34, electricity: 4.0 },
+  'Ladakh': { petrol: 96.5, diesel: 89.0, electricity: 5.0 },
+  'Puducherry': { petrol: 101.5, diesel: 93.0, electricity: 5.2 },
+  'Jammu & Kashmir': { petrol: 95.8, diesel: 88.4, electricity: 5.78 },
+  'Andaman & Nicobar': { petrol: 99.5, diesel: 88.0, electricity: 5.78 },
+  'Sikkim': { petrol: 102.5, diesel: 90.0, electricity: 5.78 },
+  'Odisha': { petrol: 102.8, diesel: 93.27, electricity: 5.82 },
+  'Bihar': { petrol: 105.58, diesel: 93.8, electricity: 5.83 },
+  'Jharkhand': { petrol: 103.5, diesel: 91.2, electricity: 6.02 },
+  'Dadra & Nagar Haveli': { petrol: 95.8, diesel: 89.5, electricity: 6.09 },
+  'Chhattisgarh': { petrol: 103.2, diesel: 90.5, electricity: 6.3 },
+  'Uttar Pradesh': { petrol: 94.69, diesel: 87.8, electricity: 6.3 },
+  'Lakshadweep': { petrol: 98.0, diesel: 87.0, electricity: 6.3 },
+  'Meghalaya': { petrol: 104.2, diesel: 91.8, electricity: 6.36 },
+  'Uttarakhand': { petrol: 95.5, diesel: 88.2, electricity: 6.51 },
+  'Assam': { petrol: 101.5, diesel: 89.5, electricity: 6.51 },
+  'Andhra Pradesh': { petrol: 109.66, diesel: 96.5, electricity: 6.56 },
+  'Chandigarh (UT)': { petrol: 94.3, diesel: 82.45, electricity: 6.59 },
+  'Arunachal Pradesh': { petrol: 103.8, diesel: 91.3, electricity: 6.62 },
+  'Tripura': { petrol: 103.0, diesel: 90.5, electricity: 6.68 },
+  'Rajasthan': { petrol: 104.72, diesel: 90.21, electricity: 6.7 },
+  'Punjab': { petrol: 94.3, diesel: 82.45, electricity: 6.71 },
+  'Nagaland': { petrol: 108.5, diesel: 94.8, electricity: 6.72 },
+  'Gujarat': { petrol: 94.49, diesel: 90.17, electricity: 6.79 },
+  'Delhi': { petrol: 94.72, diesel: 87.62, electricity: 6.83 },
+  'Himachal Pradesh': { petrol: 96.0, diesel: 87.5, electricity: 6.85 },
+  'Manipur': { petrol: 110.0, diesel: 96.0, electricity: 6.89 },
+  'Haryana': { petrol: 95.99, diesel: 88.4, electricity: 6.9 },
+  'Goa': { petrol: 103.8, diesel: 90.8, electricity: 7.0 },
+  'Mizoram': { petrol: 109.2, diesel: 95.5, electricity: 7.14 },
+  'Kerala': { petrol: 107.5, diesel: 94.8, electricity: 7.26 },
+  'Madhya Pradesh': { petrol: 106.48, diesel: 91.88, electricity: 7.34 },
+  'West Bengal': { petrol: 103.94, diesel: 90.76, electricity: 7.38 },
+  'Telangana': { petrol: 107.46, diesel: 95.7, electricity: 7.63 },
+  'Karnataka': { petrol: 102.92, diesel: 89.02, electricity: 7.9 },
+  'Maharashtra': { petrol: 104.21, diesel: 92.15, electricity: 11.19 },
+};
+
+
+// Function to update prices and efficiency based on state and fuel type
+
+function calculateSlabRoadTax(price, slabData) {
+  // Handle flat rate (simple number)
+  const adder = 0.006;
+  if (typeof slabData === 'number') {
+    return fmt(price * (slabData + adder));
+  }
+
+  // Handle slab-based (array of [threshold, rate])
+  if (Array.isArray(slabData) && slabData.length > 0) {
+    for (let i = 0; i < slabData.length; i++) {
+      const slab = slabData[i];
+      // Defensive: check if slab is valid array with 2 elements
+      if (Array.isArray(slab) && slab.length >= 2) {
+        const threshold = slab[0];
+        const rate = slab[1];
+        if (price <= threshold) {
+		  return fmt(price * (rate + adder));
+        }
+      }
+    }
+    // Fallback to last slab if no match found
+    const lastSlab = slabData[slabData.length - 1];
+    if (Array.isArray(lastSlab) && lastSlab.length >= 2) {
+      return fmt(price * (lastSlab[1] + adder));
+    }
+  }
+
+  // Safety fallback: return 0 if data is invalid
+  console.warn('Invalid slab data:', slabData);
+  return 0;
+}
+
+
+function updatePricesFromState() {
+  const adder = 0.006;
+  const state = document.getElementById('stateSelect').value;
+  const fuelType = document.getElementById('fuelTypeSelect').value || 'petrol';
+
+  // Get ex-showroom prices
+  const evEx = parseIndian(document.getElementById('evEx').value) || 0;
+  const iceEx = parseIndian(document.getElementById('iceEx').value) || 0;
+
+  // Calculate RTO FIRST (before any early returns)
+  if (state && roadTax && roadTax[state]) {
+    const rates = roadTax[state];
+
+    // EV RTO
+    if (evEx > 0 && rates.ev !== undefined) {
+      let evRto = 0;
+
+      if (typeof rates.ev === 'number') {
+        // Flat rate
+        evRto = fmt(evEx * (rates.ev + adder));
+      } else if (Array.isArray(rates.ev) && rates.ev.length > 0) {
+        // Slab-based
+        evRto = calculateSlabRoadTax(evEx, rates.ev);
+      }
+
+      document.getElementById('evRto').value = formatIndian(evRto);
+    }
+
+    // ICE RTO
+    if (iceEx > 0) {
+      const iceSlabData = (fuelType === 'diesel') ? rates.diesel : rates.petrol;
+      let iceRto = 0;
+
+      if (typeof iceSlabData === 'number') {
+        // Flat rate
+        iceRto = fmt(iceEx * (iceSlabData + adder));
+      } else if (Array.isArray(iceSlabData) && iceSlabData.length > 0) {
+        // Slab-based
+        iceRto = calculateSlabRoadTax(iceEx, iceSlabData);
+      }
+
+      document.getElementById('iceRto').value = formatIndian(iceRto);
+    }
+  }
+
+  // Check if state is selected for other updates
+  if (!state || !stateData[state]) return;
+
+  const data = stateData[state];
+
+  // Update fuel prices
+  const fuelPrice = fuelType === 'diesel' ? data.diesel : data.petrol;
+  document.getElementById('petrolCity').value = formatIndian(fuelPrice);
+  document.getElementById('petrolHwy').value = formatIndian(fuelPrice);
+
+  // Update ICE efficiency
+  if (fuelType === 'diesel') {
+    document.getElementById('iceCity').value = '14';
+    document.getElementById('iceHwy').value = '20';
+  } else {
+    document.getElementById('iceCity').value = '10';
+    document.getElementById('iceHwy').value = '16';
+  }
+
+  // Update electricity price
+  document.getElementById('ePriceCity').value = formatIndian(data.electricity);
+  document.getElementById('ePriceHwy').value = '21';
+
+  // Update EV efficiency
+  document.getElementById('evEffCity').value = '7';
+  document.getElementById('evEffHwy').value = '6';
+
+  recalc();
+}
+
+
+function getSlabDescription(price, slabs) {
+  let rate = 0; let slabDesc = '';
+  for (let i = 0; i < slabs.length; i++) {
+    if (price <= slabs[i][0]) {
+      rate = (slabs[i][1] * 100).toFixed(1);
+      if (i === 0) slabDesc = `≤₹${(slabs[i][0]/100000).toFixed(0)}L`;
+      else if (slabs[i][0] === Infinity) slabDesc = `>₹${(slabs[i-1][0]/100000).toFixed(0)}L`;
+      else slabDesc = `₹${(slabs[i-1][0]/100000).toFixed(0)}L-${(slabs[i][0]/100000).toFixed(0)}L`;
+      return (rate === '0.0') ? '0% ✓ FREE' : `${rate}% (${slabDesc})`;
+    }
+  }
+  rate = (slabs[slabs.length - 1][1] * 100).toFixed(1);
+  return `${rate}%`;
+}
+
+function formatIndian(num) {
+  if (!num && num !== 0) return '';
+  const parts = num.toString().split('.');
+  let intPart = parts[0];
+  const decPart = parts[1] || '';
+  intPart = intPart.replace(/,/g, '');
+  let lastThree = intPart.substring(intPart.length - 3);
+  let otherNumbers = intPart.substring(0, intPart.length - 3);
+  if (otherNumbers !== '') lastThree = ',' + lastThree;
+  const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+  return decPart ? formatted + '.' + decPart : formatted;
+}
+
+function parseIndian(str) {
+  if (!str) return 0;
+  return parseFloat(str.toString().replace(/,/g, '')) || 0;
+}
+
+function fmt(n) { 
+  if (!isFinite(n)) return "—";
+  return formatIndian(n.toFixed(0));
+}
+
+function fmtdecimal(n) { 
+  if (!isFinite(n)) return "—";
+  return formatIndian(n.toFixed(1));
+}
+
+
+// Apply conditional color based on value
+function applyConditionalColor(elementId, value) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  // Remove existing classes
+  element.classList.remove('positive-value', 'negative-value');
+
+  // Apply color based on value
+  if (value > 0) {
+    element.classList.add('positive-value');
+  } else if (value < 0) {
+    element.classList.add('negative-value');
+  }
+}
+
+function calcMaturity(monthly, rAnnual, months) {
+  const quarterlyRate = rAnnual / 4;
+const numQuarters = (months / 12) * 4;
+const numerator = Math.pow(1 + quarterlyRate, numQuarters) - 1;
+const denominator = 1 - Math.pow(1 + quarterlyRate, -1/3);
+return monthly * numerator / denominator;
+
+}
+function applyConditionalColor(elementId, value) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  // Remove existing classes
+  element.classList.remove('positive-value', 'negative-value');
+
+  // Apply color based on value
+  if (value > 0) {
+    element.classList.add('positive-value');
+  } else if (value < 0) {
+    element.classList.add('negative-value');
+  }
+}
+function formatInputField(input) {
+  const value = parseIndian(input.value);
+  if (isFinite(value)) input.value = formatIndian(value);
+}
+
+function calcPMT(rate, nper, pv) {
+  // Excel PMT formula: calculates monthly payment for a loan
+  // PMT = (r * PV) / (1 - (1 + r)^-n)
+  if (!rate || rate === 0 || !nper || nper === 0 || !pv || pv === 0) {
+    return 0;  // Safe fallback
+  }
+  if (rate === 0) return pv / nper;
+  return (rate * pv) / (1 - Math.pow(1 + rate, -nper));
+}
+
+
+function adjustSplit(changedField) {
+  const cityInput = document.getElementById('cityShare');
+  const hwyInput = document.getElementById('hwyShare');
+  let cityVal = parseIndian(cityInput.value);
+  let hwyVal = parseIndian(hwyInput.value);
+  cityVal = Math.max(0, Math.min(100, cityVal));
+  hwyVal = Math.max(0, Math.min(100, hwyVal));
+  if (changedField === 'city') {
+    hwyVal = 100 - cityVal;
+    hwyInput.value = hwyVal;
+  } else if (changedField === 'highway') {
+    cityVal = 100 - hwyVal;
+    cityInput.value = cityVal;
+  }
+  recalc();
+}
+
+function recalc() {
+  const city = parseIndian(document.getElementById('cityShare').value) / 100;
+  const hwy = parseIndian(document.getElementById('hwyShare').value) / 100;
+  const monthlyKm = parseIndian(document.getElementById('monthlyKm').value);
+  const years = parseIndian(document.getElementById('years').value) || 7;
+  const months = years * 12;
+  document.getElementById('months').textContent = months;
+  document.getElementById('yearsDisplay').textContent = years;
+  document.getElementById('yearsDisplay2').textContent = years;
+
+  const evEx = parseIndian(document.getElementById('evEx').value);
+  const iceEx = parseIndian(document.getElementById('iceEx').value);
+  const evDisc = parseIndian(document.getElementById('evDisc').value);
+  const iceDisc = parseIndian(document.getElementById('iceDisc').value);
+  const evRto = parseIndian(document.getElementById('evRto').value);
+  const iceRto = parseIndian(document.getElementById('iceRto').value);
+
+  const evIns = evEx * 0.043;
+  const iceIns = iceEx * 0.043;
+  const evTcs = evEx * 0.01;
+  const iceTcs = iceEx * 0.01;
+
+  const ePriceCity = parseIndian(document.getElementById('ePriceCity').value);
+  const ePriceHwy = parseIndian(document.getElementById('ePriceHwy').value);
+  const petrolCity = parseIndian(document.getElementById('petrolCity').value);
+  const petrolHwy = parseIndian(document.getElementById('petrolHwy').value);
+  const evEffCity = parseIndian(document.getElementById('evEffCity').value) || 1;
+  const evEffHwy = parseIndian(document.getElementById('evEffHwy').value) || 1;
+  const iceCity = parseIndian(document.getElementById('iceCity').value) || 1;
+  const iceHwy = parseIndian(document.getElementById('iceHwy').value) || 1;
+
+  const roiLow = parseIndian(document.getElementById('roiLow').value) / 100;
+  const roiMed = parseIndian(document.getElementById('roiMed').value) / 100;
+  const roiHigh = parseIndian(document.getElementById('roiHigh').value) / 100;
+  const loanRoi = (parseIndian(document.getElementById('loanRoi').value) || 0) / 100;
+  const loanTenure = parseIndian(document.getElementById('loanTenure').value) || 0;
+
+  const depEv = parseIndian(document.getElementById('depEv').value) / 100;
+  const depIce = parseIndian(document.getElementById('depIce').value) / 100;
+
+  const onroadEv = (evEx - evDisc) + evRto + evIns + evTcs;
+  const onroadIce = (iceEx - iceDisc) + iceRto + iceIns + iceTcs;
+  const delta = onroadEv - onroadIce;
+
+  const evCostPerKmCity = ePriceCity / evEffCity;
+  const evCostPerKmHwy = ePriceHwy / evEffHwy;
+  const iceCostPerKmCity = petrolCity / iceCity;
+  const iceCostPerKmHwy = petrolHwy / iceHwy;
+
+  const kmCity = monthlyKm * city;
+  const kmHwy = monthlyKm * hwy;
+
+  const evCityCost = kmCity * evCostPerKmCity;
+  const evHwyCost = kmHwy * evCostPerKmHwy;
+  const iceCityCost = kmCity * iceCostPerKmCity;
+  const iceHwyCost = kmHwy * iceCostPerKmHwy;
+
+  const evMonthly = evCityCost + evHwyCost;
+  const iceMonthly = iceCityCost + iceHwyCost;
+  const saveMonthly = Math.max(0, iceMonthly - evMonthly);
+
+  const matLow = calcMaturity(saveMonthly, roiLow, months);
+  const matMed = calcMaturity(saveMonthly, roiMed, months);
+  const matHigh = calcMaturity(saveMonthly, roiHigh, months);
+
+// Loan interest using EMI formula (Excel PMT)
+  const monthlyRate = loanRoi / 12;
+  const emi = calcPMT(monthlyRate, loanTenure, Math.max(0, delta));
+  const loanTotal = emi * loanTenure;
+  var loanInterest;
+  if (loanTotal===0){
+   loanInterest = 0;
+  }else{
+  loanInterest = loanTotal - Math.max(0, delta);
+  }
+  
+  const savLow = matLow - loanTotal;
+  const savMed = matMed - loanTotal;
+  const savHigh = matHigh - loanTotal;
+
+  const resEv = evEx * Math.pow(1 - depEv, years);
+  const resIce = iceEx * Math.pow(1 - depIce, years);
+  const deltaResale = resIce - resEv;
+
+  const overallLow = savLow - deltaResale;
+  const overallMed = savMed - deltaResale;
+  const overallHigh = savHigh - deltaResale;
+
+  document.getElementById('evIns').textContent = fmt(evIns);
+  document.getElementById('iceIns').textContent = fmt(iceIns);
+  document.getElementById('evTcs').textContent = fmt(evTcs);
+  document.getElementById('iceTcs').textContent = fmt(iceTcs);
+  document.getElementById('onroadEv').textContent = fmt(onroadEv);
+  document.getElementById('onroadIce').textContent = fmt(onroadIce);
+  document.getElementById('delta').textContent = fmt(delta);
+  document.getElementById('evCostCity').textContent = fmtdecimal(evCostPerKmCity);
+  document.getElementById('evCostHwy').textContent = fmtdecimal(evCostPerKmHwy);
+  document.getElementById('iceCostCity').textContent = fmtdecimal(iceCostPerKmCity);
+  document.getElementById('iceCostHwy').textContent = fmtdecimal(iceCostPerKmHwy);
+  document.getElementById('evMonthCity').textContent = fmt(evCityCost);
+  document.getElementById('evMonthHwy').textContent = fmt(evHwyCost);
+  document.getElementById('iceMonthCity').textContent = fmt(iceCityCost);
+  document.getElementById('iceMonthHwy').textContent = fmt(iceHwyCost);
+  document.getElementById('evTotal').textContent = fmt(evMonthly);
+  document.getElementById('iceTotal').textContent = fmt(iceMonthly);
+  document.getElementById('saveMo').textContent = fmt(saveMonthly);
+  document.getElementById('matLow').textContent = fmt(matLow);
+  document.getElementById('matMed').textContent = fmt(matMed);
+  document.getElementById('matHigh').textContent = fmt(matHigh);
+  document.getElementById('loanInt').textContent = fmt(loanInterest);
+  document.getElementById('loanTot').textContent = fmt(loanTotal);
+  document.getElementById('savLow').textContent = fmt(savLow);
+  document.getElementById('savMed').textContent = fmt(savMed);
+  document.getElementById('savHigh').textContent = fmt(savHigh);
+  document.getElementById('resEv').textContent = fmt(resEv);
+  document.getElementById('resIce').textContent = fmt(resIce);
+  document.getElementById('deltaRes').textContent = fmt(deltaResale);
+  document.getElementById('overallLow').textContent = fmt(overallLow);
+  document.getElementById('overallMed').textContent = fmt(overallMed);
+  document.getElementById('overallHigh').textContent = fmt(overallHigh);
+
+  // Apply conditional colors to key metrics
+  applyConditionalColor('delta', delta);
+  applyConditionalColor('saveMo', saveMonthly);
+  applyConditionalColor('savLow', savLow);
+  applyConditionalColor('savMed', savMed);
+  applyConditionalColor('savHigh', savHigh);
+  applyConditionalColor('deltaRes', deltaResale);
+  applyConditionalColor('overallLow', overallLow);
+  applyConditionalColor('overallMed', overallMed);
+  applyConditionalColor('overallHigh', overallHigh);
+  
+  // Apply conditional colors to key metrics
+  applyConditionalColor('delta', delta);
+  applyConditionalColor('saveMo', saveMonthly);
+  applyConditionalColor('savLow', savLow);
+  applyConditionalColor('savMed', savMed);
+  applyConditionalColor('savHigh', savHigh);
+  applyConditionalColor('deltaRes', deltaResale);
+  applyConditionalColor('overallLow', overallLow);
+  applyConditionalColor('overallMed', overallMed);
+  applyConditionalColor('overallHigh', overallHigh);
+}
+
+document.getElementById('cityShare').addEventListener('input', () => adjustSplit('city'));
+document.getElementById('hwyShare').addEventListener('input', () => adjustSplit('highway'));
+
+document.querySelectorAll('input[type="text"]').forEach(input => {
+  if (input.id !== 'evName' && input.id !== 'iceName') {
+    input.addEventListener('blur', function() { formatInputField(this); });
+  }
+});
+
+document.querySelectorAll('input').forEach(el => {
+  if (el.id !== 'cityShare' && el.id !== 'hwyShare') {
+    el.addEventListener('input', recalc);
+  }
+});
+
+recalc();
+
+
+// Add event listeners for state and fuel type dropdowns
+document.getElementById('stateSelect').addEventListener('change', updatePricesFromState);
+document.getElementById('evEx').addEventListener('input', updatePricesFromState);
+document.getElementById('iceEx').addEventListener('input', updatePricesFromState);
+document.getElementById('fuelTypeSelect').addEventListener('change', updatePricesFromState);
+document.getElementById('loanRoi').addEventListener('input', recalc);
+document.getElementById('loanTenure').addEventListener('input', recalc);
+
+</script>
+</body>
+</html>
