@@ -238,6 +238,7 @@
   <meta name="robots" content="noarchive">
   <meta property="og:type" content="website">
   <meta property="og:title" content="EV vs ICE Ownership Cost Calculator">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -336,7 +337,7 @@
         </p>
       </div>
 
-      <div style="background: #f8fff9; padding: 15px; border-left: 4px solid #34a853; border-radius: 6px;">
+<div style="background: #f8fff9; padding: 15px; border-left: 4px solid #34a853; border-radius: 6px;">
         <h3 style="color: #2d8659; font-size: 16px; margin: 0 0 10px 0;">
           <span style="background: #34a853; color: white; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 8px;">5</span>
           View Results & Download
@@ -689,7 +690,28 @@ document.addEventListener('DOMContentLoaded', function() {
     </tr>
   </table>
 </div>
+<!-- TCO Graph Section -->
+<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
+  <h2 style="justify-content: center; color: #2d8659; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px;">
+    📊 Total Cost of Ownership Timeline
+  </h2>
+  <p style="text-align: center; margin: 0 0 25px 0; color: #666; font-size: 14px;">
+    Year-by-year cumulative ownership costs showing when EV becomes cheaper than ICE. Chart shows the calculations based on the medium ROI scenario
+  </p>
 
+  <div style="background: #f9fafb; padding: 25px; border-radius: 10px; margin-bottom: 20px;">
+    <canvas id="tcoChart"></canvas>
+  </div>
+
+  <div id="breakevenInfo" style="text-align: center; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 10px; border: 2px solid #34a853;">
+    <p style="margin: 0; font-size: 18px; color: #2d8659; font-weight: 700;">
+      ⚡ Breakeven Point: <span id="breakevenText" style="color: #1e5631;">Calculating...</span>
+    </p>
+    <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">
+      EV becomes cheaper than ICE beyond this point
+    </p>
+  </div>
+</div>
 <!-- Download Section -->
 <div style="text-align: center; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; max-width: 800px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
   <button id="downloadBtn" style="
@@ -729,6 +751,8 @@ document.addEventListener('DOMContentLoaded', function() {
       <p style="margin: 8px 0 0 0; color: #4b5563; line-height: 1.6;">Fuel and Electricity prices have been assumed to be constant as the same basic price inflation will apply to both.</p>
     </div>
   </div>
+     
+
 
 </div>
 
@@ -1239,7 +1263,50 @@ document.getElementById('loanTenure').addEventListener('input', recalc);
 
 
 <script>
+document.getElementById('downloadBtn').addEventListener('click', function() {
+  const btn = this;
 
+  // Check if html2canvas loaded
+  if (typeof html2canvas === 'undefined') {
+    alert('Download feature is loading. Please wait a moment and try again.\n\nIf this persists, refresh the page.');
+    return;
+  }
+
+  const origText = btn.textContent;
+  btn.textContent = '⏳ Generating...';
+  btn.disabled = true;
+
+  const tbl = document.querySelector('table');
+
+  html2canvas(tbl, {
+    backgroundColor: '#f5f5f5',
+    scale: 2
+  }).then(canvas => {
+    const img = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    const d = new Date();
+    a.download = `EV-ICE-Compare-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.png`;
+    a.href = img;
+    a.click();
+
+    btn.textContent = '✓ Downloaded!';
+    btn.style.background = '#4caf50';
+    setTimeout(() => {
+      btn.textContent = origText;
+      btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
+      btn.disabled = false;
+    }, 2000);
+  }).catch(err => {
+    console.error(err);
+    btn.textContent = '❌ Error';
+    btn.style.background = '#d32f2f';
+    setTimeout(() => {
+      btn.textContent = origText;
+      btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
+      btn.disabled = false;
+    }, 3000);
+  });
+});
 
 
 // Reset calculator function
@@ -1287,7 +1354,7 @@ document.addEventListener('DOMContentLoaded', function() {
     🚗 EV vs ICE Ownership Cost Calculator
   </p>
   <p style="margin: 8px 0; font-size: 13px; color: #666;">
-    © 2025 All Rights Reserved | Made with ❤️ for Indian car buyers
+    © 2025 All Rights Reserved | Made with ❤️ for Indian EV Enthusiasts
   </p>
   <p style="margin: 8px 0; font-size: 11px; color: #999; font-style: italic;">
     ⚠️ Unauthorized copying, distribution, or reproduction is prohibited
@@ -1395,7 +1462,82 @@ document.addEventListener('DOMContentLoaded', function() {
   const downloadBtn = document.getElementById('downloadBtn');
   if (!downloadBtn) return;
 
-  }, 200);
+  downloadBtn.addEventListener('click', function() {
+    const btn = this;
+
+    // Check if html2canvas loaded
+    if (typeof html2canvas === 'undefined') {
+      alert('Download feature is loading. Please wait and try again.\n\nIf this persists, refresh the page.');
+      return;
+    }
+
+    const origText = btn.textContent;
+    btn.textContent = '⏳ Generating...';
+    btn.disabled = true;
+
+    // Create watermark
+    const watermark = document.createElement('div');
+    watermark.id = 'downloadWatermark';
+    watermark.style.position = 'fixed';
+    watermark.style.bottom = '25px';
+    watermark.style.right = '25px';
+    watermark.style.background = 'rgba(52, 168, 83, 0.95)';
+    watermark.style.color = 'white';
+    watermark.style.padding = '12px 24px';
+    watermark.style.borderRadius = '8px';
+    watermark.style.fontSize = '20px';
+    watermark.style.fontWeight = 'bold';
+    watermark.style.fontFamily = 'Arial, sans-serif';
+    watermark.style.zIndex = '999999';
+    watermark.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+    watermark.textContent = '@ferrarirules86';
+    document.body.appendChild(watermark);
+
+    // Wait for render then capture
+    setTimeout(function() {
+      html2canvas(document.body, {
+        backgroundColor: '#f5f5f5',
+        scale: 2,
+        logging: false
+      }).then(function(canvas) {
+        // Remove watermark
+        const wm = document.getElementById('downloadWatermark');
+        if (wm) document.body.removeChild(wm);
+
+        // Create download
+        const img = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        a.download = 'EV-ICE-Calculator-@ferrarirules86-' + year + '-' + month + '-' + day + '.png';
+        a.href = img;
+        a.click();
+
+        // Success feedback
+        btn.textContent = '✓ Downloaded with watermark!';
+        btn.style.background = '#4caf50';
+        setTimeout(function() {
+          btn.textContent = origText;
+          btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
+          btn.disabled = false;
+        }, 2500);
+      }).catch(function(err) {
+        // Error handling
+        const wm = document.getElementById('downloadWatermark');
+        if (wm) document.body.removeChild(wm);
+
+        console.error(err);
+        btn.textContent = '❌ Error';
+        btn.style.background = '#d32f2f';
+        setTimeout(function() {
+          btn.textContent = origText;
+          btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
+          btn.disabled = false;
+        }, 3000);
+      });
+    }, 200);
   });
 });
 </script>
@@ -1403,98 +1545,333 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-// Single download - table only with watermark
-(function() {
-  document.addEventListener('DOMContentLoaded', function() {
-    const btn = document.getElementById('downloadBtn');
-    if (!btn) return;
+// TCO Chart Generation
+let tcoChart = null;
 
-    // Remove any existing listeners by cloning
-    const newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
+function updateTCOChart() {
+  console.log('updateTCOChart called');
 
-    newBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
+  const years = parseFloat(document.getElementById('years')?.value) || 7;
+  const evEx = parseFloat(document.getElementById('evEx')?.value) || 0;
+  const iceEx = parseFloat(document.getElementById('iceEx')?.value) || 0;
 
-      if (typeof html2canvas === 'undefined') {
-        alert('Download loading. Refresh and try again.');
-        return;
+  console.log('Years:', years, 'EV Ex:', evEx, 'ICE Ex:', iceEx);
+
+  if (!evEx || !iceEx) {
+    console.log('Missing ex-showroom prices, skipping chart');
+    return;
+  }
+
+  // Get MONTHLY costs from evTotal and iceTotal
+  const evMonthlyElem = document.getElementById('evTotal');
+  const iceMonthlyElem = document.getElementById('iceTotal');
+  const matMedElem = document.getElementById('matMed');
+  const loanInterElem = document.getElementById('loanInt');
+  
+  const evMonthly = evMonthlyElem ? parseFloat(evMonthlyElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+  const iceMonthly = iceMonthlyElem ? parseFloat(iceMonthlyElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+  const maturMed = matMedElem ? parseFloat(matMedElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+  const loanInter = loanInterElem ? parseFloat(loanInterElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+
+  console.log('EV Monthly:', evMonthly, 'ICE Monthly:', iceMonthly);
+
+  // Convert to yearly
+  const evYearly = evMonthly * 12;
+  const iceYearly = iceMonthly * 12;
+
+  // Get price delta (EV - ICE)
+  const deltaElem = document.getElementById('delta') || document.getElementById('deltaRes');
+  const priceDelta = deltaElem ? parseFloat(deltaElem.textContent.replace(/[^0-9.-]/g, '')) || 0 : (evEx - iceEx);
+
+  // Get monthly savings
+  const saveMoElem = document.getElementById('saveMo');
+  const monthlySavings = saveMoElem ? parseFloat(saveMoElem.textContent.replace(/[^0-9.-]/g, '')) || 0 : (iceMonthly - evMonthly);
+
+  // Get loan ROI (if applicable)
+  const loanRoiElem = document.getElementById('loanRoi');
+  const loanRate = loanRoiElem ? parseFloat(loanRoiElem.value) / 100 : 0.09; // default 9%
+
+  // Get investment ROI (use medium risk as default)
+  const roiMedElem = document.getElementById('roiMed');
+  const investmentRate = roiMedElem ? parseFloat(roiMedElem.value) / 100 : 0.09; // default 9%
+
+  console.log('Price Delta:', priceDelta, 'Monthly Savings:', monthlySavings);
+  console.log('Loan Rate:', loanRate, 'Investment Rate:', investmentRate);
+
+  // Build data arrays
+  const labels = ['Purchase'];
+  const evData = [];
+  const iceData = [];
+  const maturMedYearly = (maturMed / years) - (monthlySavings*12);
+  const loanInterYearly = loanInter / years;
+  console.log('Loan Med yearly:', loanInterYearly, 'Maturity med:', maturMedYearly);
+  // Set initial costs based on delta
+  if (priceDelta > 0) {
+    // EV more expensive - EV starts at delta, ICE at 0
+    evData.push(priceDelta);
+    iceData.push(0);
+  } else {
+    // ICE more expensive - ICE starts at abs(delta), EV at 0
+    evData.push(0);
+    iceData.push(Math.abs(priceDelta));
+  }
+	var evCumm = 0;
+	var iceCumm = 0;
+  // Calculate year-by-year TCO
+  for (let year = 1; year <= years; year++) {
+    labels.push('Year ' + year);
+
+    const months = year * 12;
+
+    // Calculate investment returns on monthly savings (Future Value of Annuity)
+    const monthlyRate = investmentRate / 12;
+    const investmentReturns = monthlySavings > 0 && monthlyRate > 0
+      ? monthlySavings * (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate
+      : monthlySavings * months;
+
+    // Calculate loan interest on delta (using simple interest for clarity)
+    const loanInterest = Math.abs(priceDelta) * loanRate * year;
+
+    // TCO Calculation
+    if (priceDelta > 0) {
+      // EV is more expensive initially
+      // EV TCO = Delta + EV Running Costs - savings
+	  if(year===1) {
+	  evCumm = evCumm + priceDelta + evYearly + loanInterYearly - maturMedYearly
+	  }
+	  else{
+	  evCumm = evCumm +  evYearly + loanInterYearly - maturMedYearly
+	  }
+	 
+	  evData.push(evCumm);
+      // ICE TCO = ICE Running Costs only
+	  iceCumm = iceCumm + iceYearly;
+      iceData.push(iceCumm);
+    } else {
+      // ICE is more expensive initially
+      // EV TCO = EV Running Costs only
+	  evCumm = evCumm + evYearly + loanInterYearly - maturMedYearly
+      evData.push(evCumm);
+      // ICE TCO = Delta + ICE Running Costs + Loan Interest - Investment Returns on Savings
+	  if(year===1) {
+	  iceCumm = iceCumm + Math.abs(priceDelta) + iceYearly
+	  }
+	  else{
+	  iceCumm = iceCumm + iceYearly
+	  }
+	  
+      iceData.push(iceCumm);
+    }
+  }
+
+  console.log('Chart data prepared:', {labels, evData, iceData});
+
+  // Find breakeven
+  let breakeven = null;
+  for (let i = 1; i <= years; i++) {
+    if (evData[i] < iceData[i]) {
+      breakeven = i;
+      break;
+    }
+  }
+
+  // Update breakeven text
+  const breakevenSpan = document.getElementById('breakevenText');
+  const breakevenDiv = document.getElementById('breakevenInfo');
+
+  if (breakevenSpan) {
+    if (breakeven) {
+      breakevenSpan.textContent = 'Year ' + breakeven + ' (' + (breakeven*12) + ' months)';
+      if (breakevenDiv) {
+        breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+        breakevenDiv.style.borderColor = '#28a745';
       }
-
-      const origText = this.textContent;
-      const origBg = this.style.background;
-      this.textContent = '⏳ Generating...';
-      this.disabled = true;
-
-      const table = document.querySelector('table');
-      if (!table) {
-        alert('Table not found');
-        this.textContent = origText;
-        this.disabled = false;
-        return;
+    } else if (evData[years] < iceData[years]) {
+      breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
+      if (breakevenDiv) {
+        breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+        breakevenDiv.style.borderColor = '#28a745';
       }
+    } else {
+      breakevenSpan.textContent = 'Beyond ' + years + ' years';
+      if (breakevenDiv) {
+        breakevenDiv.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%)';
+        breakevenDiv.style.borderColor = '#ffc107';
+      }
+    }
+  }
 
-      // Create watermark INSIDE table parent
-      const watermark = document.createElement('div');
-      watermark.id = 'singleWatermark';
-      watermark.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:100px;font-weight:bold;font-family:Arial,sans-serif;color:rgba(52,168,83,0.03);pointer-events:none;z-index:9999;white-space:nowrap;';
-      watermark.textContent = '@ferrarirules86';
+  // Destroy old chart
+  if (tcoChart) {
+    console.log('Destroying old chart');
+    tcoChart.destroy();
+  }
 
-      const container = table.parentElement;
-      const oldPos = container.style.position;
-      container.style.position = 'relative';
-      container.appendChild(watermark);
+  // Get canvas
+  const ctx = document.getElementById('tcoChart');
+  if (!ctx) {
+    console.error('Canvas element #tcoChart not found!');
+    return;
+  }
 
-      table.scrollIntoView({ behavior: 'instant' });
+  console.log('Creating chart...');
 
-      const self = this;
-      setTimeout(function() {
-        html2canvas(table, {
-          backgroundColor: '#ffffff',
-          scale: 2,
-          logging: false
-        }).then(function(canvas) {
-          const wm = document.getElementById('singleWatermark');
-          if (wm) wm.remove();
-          container.style.position = oldPos;
-
-          const img = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          const d = new Date();
-          link.download = 'EV-ICE-Calculator-@ferrarirules86-' + d.getFullYear() + '-' + 
-                          String(d.getMonth()+1).padStart(2,'0') + '-' + 
-                          String(d.getDate()).padStart(2,'0') + '.png';
-          link.href = img;
-          link.click();
-
-          self.textContent = '✓ Downloaded!';
-          self.style.background = '#4caf50';
-          self.disabled = false;
-
-          setTimeout(function() {
-            self.textContent = origText;
-            self.style.background = origBg || 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-          }, 2000);
-        }).catch(function(err) {
-          const wm = document.getElementById('singleWatermark');
-          if (wm) wm.remove();
-          container.style.position = oldPos;
-          console.error(err);
-
-          self.textContent = '❌ Error';
-          self.style.background = '#d32f2f';
-          self.disabled = false;
-
-          setTimeout(function() {
-            self.textContent = origText;
-            self.style.background = origBg || 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-          }, 3000);
-        });
-      }, 350);
-    });
+  // Create chart
+  tcoChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'EV Total Cost',
+        data: evData,
+        borderColor: '#34a853',
+        backgroundColor: 'rgba(52, 168, 83, 0.1)',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#34a853',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+      }, {
+        label: 'ICE Total Cost',
+        data: iceData,
+        borderColor: '#ea4335',
+        backgroundColor: 'rgba(234, 67, 53, 0.1)',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#ea4335',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2,
+      plugins: {
+        title: {
+          display: false
+        },
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            font: { size: 14, weight: '600' },
+            padding: 20,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          padding: 15,
+          titleFont: { size: 15, weight: 'bold' },
+          bodyFont: { size: 14 },
+          cornerRadius: 8,
+          displayColors: true,
+          callbacks: {
+            label: function(ctx) {
+              return ctx.dataset.label + ': ₹' + (ctx.parsed.y / 100000).toFixed(2) + ' Lakhs';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Cumulative Cost (₹ Lakhs)',
+            font: { size: 14, weight: '600' },
+            color: '#333'
+          },
+          ticks: {
+            font: { size: 13 },
+            color: '#666',
+            callback: function(val) {
+              return '₹' + (val / 100000).toFixed(1) + 'L';
+            }
+          },
+          grid: {
+            color: 'rgba(0,0,0,0.05)'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Ownership Period',
+            font: { size: 14, weight: '600' },
+            color: '#333'
+          },
+          ticks: {
+            font: { size: 13 },
+            color: '#666'
+          },
+          grid: {
+            display: false
+          }
+        }
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index'
+      }
+    }
   });
-})();
+
+  console.log('Chart created successfully!');
+}
+
+// Hook to recalc function if it exists
+if (typeof window.recalc !== 'undefined') {
+  const origRecalc = window.recalc;
+  window.recalc = function() {
+    if (origRecalc) origRecalc();
+    setTimeout(updateTCOChart, 150);
+  };
+}
+
+// Event listeners for all input fields
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, setting up event listeners');
+
+  const triggerFields = ['years', 'evEx', 'iceEx', 'citySplit', 'highwaySplit', 
+                         'monthlyKm', 'evCityEfficiency', 'evHighwayEfficiency',
+                         'iceCityEfficiency', 'iceHighwayEfficiency',
+                         'evElectricityCity', 'evElectricityHighway',
+                         'iceFuelCity', 'iceFuelHighway', 'roiMed', 'loanRoi'];
+
+  triggerFields.forEach(id => {
+    const elem = document.getElementById(id);
+    if (elem) {
+      elem.addEventListener('input', function() {
+        setTimeout(updateTCOChart, 200);
+      });
+      elem.addEventListener('change', function() {
+        setTimeout(updateTCOChart, 200);
+      });
+    }
+  });
+
+  // Fallback: trigger on any number input
+  document.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+    input.addEventListener('input', () => setTimeout(updateTCOChart, 250));
+  });
+
+  console.log('Event listeners attached, calling updateTCOChart in 1 second');
+  setTimeout(updateTCOChart, 1000);
+});
+
+// Also try on window load
+window.addEventListener('load', function() {
+  console.log('Window loaded, calling updateTCOChart');
+  setTimeout(updateTCOChart, 1200);
+});
 </script>
 
 </body>
