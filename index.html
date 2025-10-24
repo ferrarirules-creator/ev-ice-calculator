@@ -1239,50 +1239,7 @@ document.getElementById('loanTenure').addEventListener('input', recalc);
 
 
 <script>
-document.getElementById('downloadBtn').addEventListener('click', function() {
-  const btn = this;
 
-  // Check if html2canvas loaded
-  if (typeof html2canvas === 'undefined') {
-    alert('Download feature is loading. Please wait a moment and try again.\n\nIf this persists, refresh the page.');
-    return;
-  }
-
-  const origText = btn.textContent;
-  btn.textContent = '⏳ Generating...';
-  btn.disabled = true;
-
-  const tbl = document.querySelector('table');
-
-  html2canvas(tbl, {
-    backgroundColor: '#f5f5f5',
-    scale: 2
-  }).then(canvas => {
-    const img = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    const d = new Date();
-    a.download = `EV-ICE-Compare-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.png`;
-    a.href = img;
-    a.click();
-
-    btn.textContent = '✓ Downloaded!';
-    btn.style.background = '#4caf50';
-    setTimeout(() => {
-      btn.textContent = origText;
-      btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-      btn.disabled = false;
-    }, 2000);
-  }).catch(err => {
-    console.error(err);
-    btn.textContent = '❌ Error';
-    btn.style.background = '#d32f2f';
-    setTimeout(() => {
-      btn.textContent = origText;
-      btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-      btn.disabled = false;
-    }, 3000);
-  });
-});
 
 
 // Reset calculator function
@@ -1330,7 +1287,7 @@ document.addEventListener('DOMContentLoaded', function() {
     🚗 EV vs ICE Ownership Cost Calculator
   </p>
   <p style="margin: 8px 0; font-size: 13px; color: #666;">
-    © 2025 All Rights Reserved | Made with ❤️ for Indian EV Enthusiasts
+    © 2025 All Rights Reserved | Made with ❤️ for Indian car buyers
   </p>
   <p style="margin: 8px 0; font-size: 11px; color: #999; font-style: italic;">
     ⚠️ Unauthorized copying, distribution, or reproduction is prohibited
@@ -1438,84 +1395,106 @@ document.addEventListener('DOMContentLoaded', function() {
   const downloadBtn = document.getElementById('downloadBtn');
   if (!downloadBtn) return;
 
-  downloadBtn.addEventListener('click', function() {
-    const btn = this;
-
-    // Check if html2canvas loaded
-    if (typeof html2canvas === 'undefined') {
-      alert('Download feature is loading. Please wait and try again.\n\nIf this persists, refresh the page.');
-      return;
-    }
-
-    const origText = btn.textContent;
-    btn.textContent = '⏳ Generating...';
-    btn.disabled = true;
-
-    // Create watermark
-    const watermark = document.createElement('div');
-    watermark.id = 'downloadWatermark';
-    watermark.style.position = 'fixed';
-    watermark.style.bottom = '25px';
-    watermark.style.right = '25px';
-    watermark.style.background = 'rgba(52, 168, 83, 0.95)';
-    watermark.style.color = 'white';
-    watermark.style.padding = '12px 24px';
-    watermark.style.borderRadius = '8px';
-    watermark.style.fontSize = '20px';
-    watermark.style.fontWeight = 'bold';
-    watermark.style.fontFamily = 'Arial, sans-serif';
-    watermark.style.zIndex = '999999';
-    watermark.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
-    watermark.textContent = '@ferrarirules86';
-    document.body.appendChild(watermark);
-
-    // Wait for render then capture
-    setTimeout(function() {
-      html2canvas(document.body, {
-        backgroundColor: '#f5f5f5',
-        scale: 2,
-        logging: false
-      }).then(function(canvas) {
-        // Remove watermark
-        const wm = document.getElementById('downloadWatermark');
-        if (wm) document.body.removeChild(wm);
-
-        // Create download
-        const img = canvas.toDataURL('image/png');
-        const a = document.createElement('a');
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        a.download = 'EV-ICE-Calculator-@ferrarirules86-' + year + '-' + month + '-' + day + '.png';
-        a.href = img;
-        a.click();
-
-        // Success feedback
-        btn.textContent = '✓ Downloaded with watermark!';
-        btn.style.background = '#4caf50';
-        setTimeout(function() {
-          btn.textContent = origText;
-          btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-          btn.disabled = false;
-        }, 2500);
-      }).catch(function(err) {
-        // Error handling
-        const wm = document.getElementById('downloadWatermark');
-        if (wm) document.body.removeChild(wm);
-
-        console.error(err);
-        btn.textContent = '❌ Error';
-        btn.style.background = '#d32f2f';
-        setTimeout(function() {
-          btn.textContent = origText;
-          btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-          btn.disabled = false;
-        }, 3000);
-      });
-    }, 200);
+  }, 200);
   });
 });
+</script>
+
+
+
+<script>
+// Single download - table only with watermark
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('downloadBtn');
+    if (!btn) return;
+
+    // Remove any existing listeners by cloning
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+
+    newBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (typeof html2canvas === 'undefined') {
+        alert('Download loading. Refresh and try again.');
+        return;
+      }
+
+      const origText = this.textContent;
+      const origBg = this.style.background;
+      this.textContent = '⏳ Generating...';
+      this.disabled = true;
+
+      const table = document.querySelector('table');
+      if (!table) {
+        alert('Table not found');
+        this.textContent = origText;
+        this.disabled = false;
+        return;
+      }
+
+      // Create watermark INSIDE table parent
+      const watermark = document.createElement('div');
+      watermark.id = 'singleWatermark';
+      watermark.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:100px;font-weight:bold;font-family:Arial,sans-serif;color:rgba(52,168,83,0.03);pointer-events:none;z-index:9999;white-space:nowrap;';
+      watermark.textContent = '@ferrarirules86';
+
+      const container = table.parentElement;
+      const oldPos = container.style.position;
+      container.style.position = 'relative';
+      container.appendChild(watermark);
+
+      table.scrollIntoView({ behavior: 'instant' });
+
+      const self = this;
+      setTimeout(function() {
+        html2canvas(table, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false
+        }).then(function(canvas) {
+          const wm = document.getElementById('singleWatermark');
+          if (wm) wm.remove();
+          container.style.position = oldPos;
+
+          const img = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          const d = new Date();
+          link.download = 'EV-ICE-Calculator-@ferrarirules86-' + d.getFullYear() + '-' + 
+                          String(d.getMonth()+1).padStart(2,'0') + '-' + 
+                          String(d.getDate()).padStart(2,'0') + '.png';
+          link.href = img;
+          link.click();
+
+          self.textContent = '✓ Downloaded!';
+          self.style.background = '#4caf50';
+          self.disabled = false;
+
+          setTimeout(function() {
+            self.textContent = origText;
+            self.style.background = origBg || 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
+          }, 2000);
+        }).catch(function(err) {
+          const wm = document.getElementById('singleWatermark');
+          if (wm) wm.remove();
+          container.style.position = oldPos;
+          console.error(err);
+
+          self.textContent = '❌ Error';
+          self.style.background = '#d32f2f';
+          self.disabled = false;
+
+          setTimeout(function() {
+            self.textContent = origText;
+            self.style.background = origBg || 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
+          }, 3000);
+        });
+      }, 350);
+    });
+  });
+})();
 </script>
 
 </body>
