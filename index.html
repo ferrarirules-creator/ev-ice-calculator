@@ -1164,10 +1164,20 @@ function recalc() {
   }else{
   loanInterest = loanTotal - Math.max(0, delta);
   }
-  
-  const savLow = matLow - loanTotal;
-  const savMed = matMed - loanTotal;
-  const savHigh = matHigh - loanTotal;
+  var savLow;
+  var savMed;
+  var savMed;
+
+  if (delta > 0){
+  savLow = matLow - loanTotal;
+  savMed = matMed - loanTotal;
+  savHigh = matHigh - loanTotal;
+  }
+  else{
+  savLow = matLow + Math.abs(delta);
+  savMed = matMed + Math.abs(delta);
+  savHigh = matHigh + Math.abs(delta);
+  }
 
   const resEv = evEx * Math.pow(1 - depEv, years);
   const resIce = iceEx * Math.pow(1 - depIce, years);
@@ -1680,14 +1690,14 @@ function updateTCOChart() {
   const breakevenDiv = document.getElementById('breakevenInfo');
 
   if (breakevenSpan) {
-    if (breakeven) {
-      breakevenSpan.textContent = 'Year ' + breakeven + ' (' + (breakeven*12) + ' months)';
+    if (priceDelta < 0) {
+	 breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
         breakevenDiv.style.borderColor = '#28a745';
       }
-    } else if (evData[years] < iceData[years]) {
-      breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
+    } else if (breakeven) {
+      breakevenSpan.textContent = 'Year ' + breakeven + ' (' + (breakeven*12) + ' months)';
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
         breakevenDiv.style.borderColor = '#28a745';
