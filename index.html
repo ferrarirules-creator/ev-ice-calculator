@@ -1156,13 +1156,14 @@ function recalc() {
 
 // Loan interest using EMI formula (Excel PMT)
   const monthlyRate = loanRoi / 12;
-  const emi = calcPMT(monthlyRate, loanTenure, Math.max(0, delta));
+  const emi = calcPMT(monthlyRate, loanTenure, Math.abs(delta));
+
   const loanTotal = emi * loanTenure;
   var loanInterest;
   if (loanTotal===0){
    loanInterest = 0;
   }else{
-  loanInterest = loanTotal - Math.max(0, delta);
+  loanInterest = loanTotal - Math.abs(delta);
   }
   var savLow;
   var savMed;
