@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </table>
 </div>
 <!-- TCO Graph Section -->
-<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; min-height: 800px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
+<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; min-height: 400px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
   <h2 style="justify-content: center; color: #2d8659; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px;">
     📊 Total Cost of Ownership Timeline
   </h2>
@@ -1676,26 +1676,26 @@ function updateTCOChart() {
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      aspectRatio: 2,
+      aspectRatio: window.innerWidth < 768 ? 1.2 : 2,
       plugins: {
         title: {
           display: false
         },
         legend: {
           display: true,
-          position: 'top',
+          position: window.innerWidth < 768 ? 'bottom' : 'top',
           labels: {
-            font: { size: 14, weight: '600' },
-            padding: 20,
+            font: { size: window.innerWidth < 768 ? 10 : 14, weight: '600' },
+            padding: window.innerWidth < 768 ? 10 : 20,
             usePointStyle: true,
             pointStyle: 'circle'
           }
         },
         tooltip: {
           backgroundColor: 'rgba(0,0,0,0.8)',
-          padding: 15,
-          titleFont: { size: 15, weight: 'bold' },
-          bodyFont: { size: 14 },
+          padding: window.innerWidth < 768 ? 10 : 15,
+          titleFont: { size: window.innerWidth < 768 ? 12 : 15, weight: 'bold' },
+          bodyFont: { size: window.innerWidth < 768 ? 11 : 14 },
           cornerRadius: 8,
           displayColors: true,
           callbacks: {
@@ -1710,8 +1710,8 @@ function updateTCOChart() {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Cumulative Cost (₹ Lakhs)',
-            font: { size: 14, weight: '600' },
+            text: window.innerWidth < 768 ? 'Cost (₹L)' : 'Cumulative Cost (₹ Lakhs)',
+            font: { size: window.innerWidth < 768 ? 10 : 14, weight: '600' },
             color: '#333'
           },
           ticks: {
@@ -1729,7 +1729,7 @@ function updateTCOChart() {
           title: {
             display: true,
             text: 'Ownership Period',
-            font: { size: 14, weight: '600' },
+            font: { size: window.innerWidth < 768 ? 10 : 14, weight: '600' },
             color: '#333'
           },
           ticks: {
