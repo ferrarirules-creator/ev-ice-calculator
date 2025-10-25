@@ -228,45 +228,30 @@
     z-index: 9999;
   }
 
-  /* Priority 1 & 2 Enhancements */
-
-  @keyframes slideInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 8px 32px rgba(46, 125, 50, 0.2); }
-    50% { box-shadow: 0 12px 40px rgba(46, 125, 50, 0.4); }
-  }
-
-  #breakevenInfo {
-    background: rgba(212, 237, 218, 0.85) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
-    border-radius: 16px !important;
-    padding: 24px !important;
-    margin: 20px !important;
-    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    animation: slideInUp 0.6s ease-out, pulse 2s ease-in-out infinite;
-  }
-
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 8px 32px rgba(46, 125, 50, 0.2); } 50% { box-shadow: 0 12px 40px rgba(46, 125, 50, 0.4); } }
+  @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  #breakevenInfo { background: rgba(212, 237, 218, 0.85) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1.5px solid rgba(255, 255, 255, 0.5) !important; border-radius: 16px !important; padding: 24px !important; margin: 20px !important; box-shadow: 0 8px 32px rgba(46, 125, 50, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6); animation: slideInUp 0.6s ease-out, pulse 2s ease-in-out infinite; }
   td:hover { background-color: #f8f9fa !important; transform: scale(1.01); }
   input:hover, select:hover { border-color: #2d8659; box-shadow: 0 0 0 3px rgba(45, 134, 89, 0.1); }
   input:focus, select:focus { border-color: #2d8659; box-shadow: 0 0 0 4px rgba(45, 134, 89, 0.15); transform: scale(1.02); }
-
   .savings-positive { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important; font-weight: 600; color: #155724; }
   .savings-negative { background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important; font-weight: 600; color: #721c24; }
-  .key-number { font-size: 20px !important; font-weight: 700 !important; letter-spacing: -0.5px; }
-  .hero-number { font-size: 24px !important; font-weight: 700 !important; letter-spacing: -0.8px; color: #1e5631; }
-  #breakevenText { font-size: 28px !important; font-weight: 700 !important; letter-spacing: -0.5px; }
-
-  td, input, select, .chart-container { transition: all 0.3s ease; }
-
-  .section-card { background: white; border-radius: 12px; margin: 16px 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border: 1px solid #e5e7eb; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-  .section-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); }
-  .chart-container { background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%); border-radius: 12px; padding: 20px; margin: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  .key-number { font-size: 20px !important; font-weight: 700 !important; }
+  .hero-number { font-size: 24px !important; font-weight: 700 !important; color: #1e5631; }
+  #breakevenText { font-size: 28px !important; font-weight: 700 !important; }
+  td, input, select { transition: all 0.3s ease; }
+  [data-theme="dark"] body { background: #111827; color: #f9fafb; }
+  [data-theme="dark"] .container { background: #1f2937; border-color: #374151; }
+  [data-theme="dark"] td { background: #1f2937; color: #f9fafb; border-color: #374151; }
+  [data-theme="dark"] input, [data-theme="dark"] select { background: #1f2937; color: #f9fafb; border-color: #374151; }
+  .dark-mode-toggle { position: fixed; top: 20px; right: 20px; background: white; border: 2px solid #e5e7eb; border-radius: 50px; padding: 10px 20px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; z-index: 1000; display: flex; align-items: center; gap: 8px; }
+  .dark-mode-toggle:hover { transform: translateY(-2px); }
+  .insights-container { display: flex; flex-wrap: wrap; gap: 12px; padding: 20px; justify-content: center; }
+  .insight-badge { background: linear-gradient(135deg, #34a853 0%, #2d8659 100%); color: white; padding: 10px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3); animation: fadeInScale 0.5s ease-out; transition: all 0.3s ease; }
+  .insight-badge:hover { transform: translateY(-2px) scale(1.05); }
+  .insight-badge.warning { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); }
+  .insight-badge.info { background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); }
 
 </style>
 
@@ -282,6 +267,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
+    
 
 <div class="container">
   <div class="header" style="padding: 20px; background: linear-gradient(135deg, #2d8659 0%, #34a853 100%);">
@@ -729,9 +715,9 @@ document.addEventListener('DOMContentLoaded', function() {
       <td class="highlight-cell mono" id="overallMed" style="font-size: 16px;">—</td>
       <td class="highlight-cell mono" colspan="2" id="overallHigh" style="font-size: 16px;">—</td>
     </tr>
-  </table>
-</div>
-<!-- TCO Graph Section -->
+	<tr>
+	<td colspan="5">
+	<!-- TCO Graph Section -->
 <div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; min-height: 800px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
   <h2 style="justify-content: center; color: #2d8659; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px;">
     📊 Total Cost of Ownership Timeline
@@ -753,6 +739,10 @@ document.addEventListener('DOMContentLoaded', function() {
     </p>
   </div>
 </div>
+	</td></tr>
+  </table>
+</div>
+
 <!-- Download Section -->
 <div style="text-align: center; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; max-width: 800px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
   <button id="downloadBtn" style="
@@ -1510,85 +1500,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-
-  // Chart Breakeven Marker Function
-  function addBreakevenMarker(chart, breakevenMonths, years) {
-    if (!chart || !breakevenMonths) return;
-
-    const breakevenYears = breakevenMonths / 12;
-    const labels = chart.data.labels;
-    let closestIndex = 0;
-    let minDiff = Infinity;
-
-    // Find closest label to breakeven year
-    labels.forEach((label, index) => {
-      let yearValue = 0;
-      if (label === 'Purchase') yearValue = 0;
-      else if (label.includes('Year')) yearValue = parseInt(label.replace('Year ', ''));
-
-      const diff = Math.abs(yearValue - breakevenYears);
-	  
-      if (diff < minDiff) {
-        minDiff = diff;
-		closestIndex = index;
-      }
-    });
-
-    // Style all points
-    chart.data.datasets.forEach((dataset, datasetIndex) => {
-      if (!Array.isArray(dataset.pointRadius)) {
-        const len = dataset.data.length;
-        dataset.pointStyle = new Array(len).fill('circle');
-        dataset.pointRadius = new Array(len).fill(5);
-        dataset.pointBorderWidth = new Array(len).fill(2);
-      }
-
-      // Highlight breakeven point on EV line (first dataset)
-      if (datasetIndex === 0) {
-        dataset.pointStyle[closestIndex] = 'star';
-        dataset.pointRadius[closestIndex] = 14;
-        dataset.pointBorderWidth[closestIndex] = 3;
-
-        // Store original colors
-        const originalBorderColor = dataset.borderColor;
-        const originalBgColor = dataset.backgroundColor;
-
-        // Create arrays for colors
-        dataset.pointBorderColor = new Array(len).fill(originalBorderColor);
-        dataset.pointBackgroundColor = new Array(len).fill(originalBorderColor);
-
-        // Set breakeven point to golden
-        dataset.pointBorderColor[closestIndex] = '#ffc107';
-        dataset.pointBackgroundColor[closestIndex] = '#ffc107';
-      }
-    });
-
-    chart.update('none');
-  }
-
-  function highlightSavings() {
-    const monthlySavings = document.getElementById('savingsMonth');
-    if (monthlySavings) {
-      const value = parseFloat(monthlySavings.textContent.replace(/[^0-9.-]/g, ''));
-      if (value > 0) monthlySavings.classList.add('key-number', 'savings-positive');
-      else if (value < 0) monthlySavings.classList.add('key-number', 'savings-negative');
-    }
-
-    const allCells = document.querySelectorAll('td');
-    allCells.forEach((td, index) => {
-      if (td.textContent.includes('Overall Net Savings')) {
-        const valueTd = allCells[index + 1];
-        if (valueTd) {
-          valueTd.classList.add('hero-number');
-          const value = parseFloat(valueTd.textContent.replace(/[^0-9.-]/g, ''));
-          if (value > 0) valueTd.classList.add('savings-positive');
-          else if (value < 0) valueTd.classList.add('savings-negative');
-        }
-      }
-    });
-  }
-
-
 // TCO Chart Generation
 let tcoChart = null;
 
@@ -1888,14 +1799,9 @@ function updateTCOChart() {
       }
     }
   });
-
-    // Add visual breakeven marker
-    if (breakevenMonths) {
-      addBreakevenMarker(tcoChart, breakevenMonths, years);
-    }
-    
-    // Highlight savings
+    if (breakevenMonths) addBreakevenMarker(tcoChart, breakevenMonths, years);
     highlightSavings();
+    displayInsightBadges(breakevenMonths);
 
   console.log('Chart created successfully!');
 }
@@ -1945,6 +1851,133 @@ window.addEventListener('load', function() {
   console.log('Window loaded, calling updateTCOChart');
   setTimeout(updateTCOChart, 1200);
 });
+
+
+  function addBreakevenMarker(chart, breakevenMonths, years) {
+    if (!chart || !breakevenMonths) return;
+    const breakevenYears = breakevenMonths / 12;
+    const labels = chart.data.labels;
+    let closestIndex = 0;
+    let minDiff = Infinity;
+    labels.forEach((label, index) => {
+      let yearValue = 0;
+      if (label === 'Purchase') yearValue = 0;
+      else if (label.includes('Year')) yearValue = parseInt(label.replace('Year ', ''));
+      const diff = Math.abs(yearValue - breakevenYears);
+      if (diff < minDiff) { minDiff = diff; closestIndex = index; }
+    });
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      const len = dataset.data.length;
+      if (!Array.isArray(dataset.pointRadius)) {
+        dataset.pointStyle = new Array(len).fill('circle');
+        dataset.pointRadius = new Array(len).fill(5);
+        dataset.pointBorderWidth = new Array(len).fill(2);
+      }
+      if (datasetIndex === 0) {
+        dataset.pointStyle[closestIndex] = 'star';
+        dataset.pointRadius[closestIndex] = 14;
+        dataset.pointBorderWidth[closestIndex] = 3;
+        dataset.pointBorderColor = new Array(len).fill(dataset.borderColor);
+        dataset.pointBackgroundColor = new Array(len).fill(dataset.borderColor);
+        dataset.pointBorderColor[closestIndex] = '#ffc107';
+        dataset.pointBackgroundColor[closestIndex] = '#ffc107';
+      }
+    });
+    chart.update('none');
+  }
+
+  function highlightSavings() {
+    const monthlySavings = document.getElementById('savingsMonth');
+    if (monthlySavings) {
+      const value = parseFloat(monthlySavings.textContent.replace(/[^0-9.-]/g, ''));
+      if (value > 0) monthlySavings.classList.add('key-number', 'savings-positive');
+      else if (value < 0) monthlySavings.classList.add('key-number', 'savings-negative');
+    }
+    const allCells = document.querySelectorAll('td');
+    allCells.forEach((td, index) => {
+      if (td.textContent.includes('Overall Net Savings')) {
+        const valueTd = allCells[index + 1];
+        if (valueTd) {
+          valueTd.classList.add('hero-number');
+          const value = parseFloat(valueTd.textContent.replace(/[^0-9.-]/g, ''));
+          if (value > 0) valueTd.classList.add('savings-positive');
+          else if (value < 0) valueTd.classList.add('savings-negative');
+        }
+      }
+    });
+  }
+
+  function generateInsightBadges(breakevenMonths) {
+    const breakevenText = document.getElementById('breakevenText')?.textContent || '';
+    //const breakevenMonths = parseInt(breakevenText.match(/\d+/)?.[0]) || 0;
+    const savingsMonth = parseFloat(document.getElementById('saveMo')?.textContent.replace(/[^0-9.-]/g, '')) || 0;
+	let netSavings = 0;
+    document.querySelectorAll('td').forEach((td, index, cells) => {
+      if (td.textContent.includes('Overall Net Savings') && cells[index + 1]) {
+        netSavings = parseFloat(cells[index + 1].textContent.replace(/[^0-9.-]/g, '')) || 0;
+      }
+    });
+    const badges = [];
+    if (savingsMonth > 0) badges.push({ icon: '💰', text: 'Save ₹' + Math.abs(savingsMonth).toLocaleString('en-IN') + '/month', type: 'success' });
+    if (breakevenMonths && breakevenMonths < 36) badges.push({ icon: '⚡', text: 'Quick Breakeven: ' + breakevenMonths + ' months', type: 'success' });
+    else if (breakevenMonths >= 36) badges.push({ icon: '⏳', text: 'Breakeven: ' + Math.floor(breakevenMonths/12) + ' years', type: 'warning' });
+    if (netSavings > 100000) badges.push({ icon: '🎯', text: '₹' + (netSavings/100000).toFixed(1) + 'L+ Total Savings', type: 'success' });
+    const evTotal = parseFloat(document.getElementById('evTotal')?.textContent.replace(/[^0-9.-]/g, '')) || 0;
+    const iceTotal = parseFloat(document.getElementById('iceTotal')?.textContent.replace(/[^0-9.-]/g, '')) || 0;
+    if (evTotal > 0 && iceTotal > 0) {
+      const savings = ((1 - evTotal/iceTotal) * 100).toFixed(0);
+      if (savings > 0) badges.push({ icon: '📉', text: savings + '% Lower Running Cost', type: 'info' });
+    }
+    return badges;
+  }
+
+  function displayInsightBadges(breakevenMonths) {
+    const badges = generateInsightBadges(breakevenMonths);
+    if (badges.length === 0) return;
+    let container = document.getElementById('insightBadges');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'insightBadges';
+      container.className = 'insights-container';
+      const breakevenBox = document.getElementById('breakevenInfo');
+      if (breakevenBox?.parentNode) breakevenBox.parentNode.insertBefore(container, breakevenBox.nextSibling);
+    }
+    container.innerHTML = badges.map(b => '<div class="insight-badge ' + (b.type || '') + '"><span class="badge-icon">' + b.icon + '</span><span>' + b.text + '</span></div>').join('');
+  }
+
+  function toggleDarkMode() {
+    const html = document.documentElement;
+    const icon = document.getElementById('darkModeIcon');
+    const text = document.getElementById('darkModeText');
+    if (html.getAttribute('data-theme') === 'dark') {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      if (icon) icon.textContent = '🌙';
+      if (text) text.textContent = 'Dark';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      if (icon) icon.textContent = '☀️';
+      if (text) text.textContent = 'Light';
+    }
+    if (typeof tcoChart !== 'undefined' && tcoChart) {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      tcoChart.options.scales.y.grid.color = isDark ? '#374151' : '#e5e7eb';
+      tcoChart.options.scales.x.grid.color = isDark ? '#374151' : '#e5e7eb';
+      tcoChart.update('none');
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      const icon = document.getElementById('darkModeIcon');
+      const text = document.getElementById('darkModeText');
+      if (icon) icon.textContent = '☀️';
+      if (text) text.textContent = 'Light';
+    }
+  });
+
 </script>
 
 </body>
