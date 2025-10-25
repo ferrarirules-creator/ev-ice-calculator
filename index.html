@@ -1617,7 +1617,7 @@ function updateTCOChart() {
   const loanInterYearly = loanInter / years;
   console.log('Loan Med yearly:', loanInterYearly, 'Maturity med:', maturMedYearly);
   // Set initial costs based on delta
-  if (priceDelta > 0) {
+  if (priceDelta < 0) {
     // EV more expensive - EV starts at delta, ICE at 0
     evData.push(priceDelta);
     iceData.push(0);
