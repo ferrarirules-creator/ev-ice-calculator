@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <td class="computed-cell mono" colspan="2" id="onroadIce">—</td>
     </tr>
     <tr>
-      <td class="result-label">Price Delta (EV - ICE)</td>
+      <td class="result-label">Price Delta (ICE - EV)</td>
       <td class="highlight-cell mono" colspan="4" id="delta">—</td>
     </tr>
 
@@ -1131,7 +1131,7 @@ function recalc() {
 
   const onroadEv = (evEx - evDisc) + evRto + evIns + evTcs;
   const onroadIce = (iceEx - iceDisc) + iceRto + iceIns + iceTcs;
-  const delta = onroadEv - onroadIce;
+  const delta = onroadIce - onroadEv;
 
   const evCostPerKmCity = ePriceCity / evEffCity;
   const evCostPerKmHwy = ePriceHwy / evEffHwy;
