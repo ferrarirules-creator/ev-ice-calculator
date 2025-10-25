@@ -227,6 +227,47 @@
     pointer-events: none;
     z-index: 9999;
   }
+
+  /* Priority 1 & 2 Enhancements */
+
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 8px 32px rgba(46, 125, 50, 0.2); }
+    50% { box-shadow: 0 12px 40px rgba(46, 125, 50, 0.4); }
+  }
+
+  #breakevenInfo {
+    background: rgba(212, 237, 218, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    margin: 20px !important;
+    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    animation: slideInUp 0.6s ease-out, pulse 2s ease-in-out infinite;
+  }
+
+  td:hover { background-color: #f8f9fa !important; transform: scale(1.01); }
+  input:hover, select:hover { border-color: #2d8659; box-shadow: 0 0 0 3px rgba(45, 134, 89, 0.1); }
+  input:focus, select:focus { border-color: #2d8659; box-shadow: 0 0 0 4px rgba(45, 134, 89, 0.15); transform: scale(1.02); }
+
+  .savings-positive { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important; font-weight: 600; color: #155724; }
+  .savings-negative { background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important; font-weight: 600; color: #721c24; }
+  .key-number { font-size: 20px !important; font-weight: 700 !important; letter-spacing: -0.5px; }
+  .hero-number { font-size: 24px !important; font-weight: 700 !important; letter-spacing: -0.8px; color: #1e5631; }
+  #breakevenText { font-size: 28px !important; font-weight: 700 !important; letter-spacing: -0.5px; }
+
+  td, input, select, .chart-container { transition: all 0.3s ease; }
+
+  .section-card { background: white; border-radius: 12px; margin: 16px 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border: 1px solid #e5e7eb; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .section-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); }
+  .chart-container { background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%); border-radius: 12px; padding: 20px; margin: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+
 </style>
 
   <!-- html2canvas library -->
@@ -1469,6 +1510,85 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
+
+  // Chart Breakeven Marker Function
+  function addBreakevenMarker(chart, breakevenMonths, years) {
+    if (!chart || !breakevenMonths) return;
+
+    const breakevenYears = breakevenMonths / 12;
+    const labels = chart.data.labels;
+    let closestIndex = 0;
+    let minDiff = Infinity;
+
+    // Find closest label to breakeven year
+    labels.forEach((label, index) => {
+      let yearValue = 0;
+      if (label === 'Purchase') yearValue = 0;
+      else if (label.includes('Year')) yearValue = parseInt(label.replace('Year ', ''));
+
+      const diff = Math.abs(yearValue - breakevenYears);
+	  
+      if (diff < minDiff) {
+        minDiff = diff;
+		closestIndex = index;
+      }
+    });
+
+    // Style all points
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      if (!Array.isArray(dataset.pointRadius)) {
+        const len = dataset.data.length;
+        dataset.pointStyle = new Array(len).fill('circle');
+        dataset.pointRadius = new Array(len).fill(5);
+        dataset.pointBorderWidth = new Array(len).fill(2);
+      }
+
+      // Highlight breakeven point on EV line (first dataset)
+      if (datasetIndex === 0) {
+        dataset.pointStyle[closestIndex] = 'star';
+        dataset.pointRadius[closestIndex] = 14;
+        dataset.pointBorderWidth[closestIndex] = 3;
+
+        // Store original colors
+        const originalBorderColor = dataset.borderColor;
+        const originalBgColor = dataset.backgroundColor;
+
+        // Create arrays for colors
+        dataset.pointBorderColor = new Array(len).fill(originalBorderColor);
+        dataset.pointBackgroundColor = new Array(len).fill(originalBorderColor);
+
+        // Set breakeven point to golden
+        dataset.pointBorderColor[closestIndex] = '#ffc107';
+        dataset.pointBackgroundColor[closestIndex] = '#ffc107';
+      }
+    });
+
+    chart.update('none');
+  }
+
+  function highlightSavings() {
+    const monthlySavings = document.getElementById('savingsMonth');
+    if (monthlySavings) {
+      const value = parseFloat(monthlySavings.textContent.replace(/[^0-9.-]/g, ''));
+      if (value > 0) monthlySavings.classList.add('key-number', 'savings-positive');
+      else if (value < 0) monthlySavings.classList.add('key-number', 'savings-negative');
+    }
+
+    const allCells = document.querySelectorAll('td');
+    allCells.forEach((td, index) => {
+      if (td.textContent.includes('Overall Net Savings')) {
+        const valueTd = allCells[index + 1];
+        if (valueTd) {
+          valueTd.classList.add('hero-number');
+          const value = parseFloat(valueTd.textContent.replace(/[^0-9.-]/g, ''));
+          if (value > 0) valueTd.classList.add('savings-positive');
+          else if (value < 0) valueTd.classList.add('savings-negative');
+        }
+      }
+    });
+  }
+
+
 // TCO Chart Generation
 let tcoChart = null;
 
@@ -1768,6 +1888,14 @@ function updateTCOChart() {
       }
     }
   });
+
+    // Add visual breakeven marker
+    if (breakevenMonths) {
+      addBreakevenMarker(tcoChart, breakevenMonths, years);
+    }
+    
+    // Highlight savings
+    highlightSavings();
 
   console.log('Chart created successfully!');
 }
