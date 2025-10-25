@@ -1619,7 +1619,7 @@ function updateTCOChart() {
   // Set initial costs based on delta
   if (priceDelta < 0) {
     // EV more expensive - EV starts at delta, ICE at 0
-    evData.push(priceDelta);
+    evData.push(Math.abs(priceDelta));
     iceData.push(0);
   } else {
     // ICE more expensive - ICE starts at abs(delta), EV at 0
