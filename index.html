@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </table>
 </div>
 <!-- TCO Graph Section -->
-<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; min-height: 400px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
+<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; min-height: 800px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
   <h2 style="justify-content: center; color: #2d8659; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px;">
     📊 Total Cost of Ownership Timeline
   </h2>
@@ -1590,11 +1590,20 @@ function updateTCOChart() {
 
   console.log('Chart data prepared:', {labels, evData, iceData});
 
-  // Find breakeven
-  let breakeven = null;
-  for (let i = 1; i <= years; i++) {
-    if (evData[i] < iceData[i]) {
-      breakeven = i;
+  // Find breakeven in months
+  let breakevenMonths = null;
+  const totalMonths = years * 12;
+
+  // Calculate month-by-month TCO for precise breakeven
+  let evCummMonth = priceDelta < 0 ? Math.abs(priceDelta) : 0;
+  let iceCummMonth = priceDelta < 0 ? 0 : Math.abs(priceDelta);
+
+  for (let month = 1; month <= totalMonths; month++) {
+    evCummMonth += (evYearly / 12) + (loanInter / totalMonths) - ((maturMed / totalMonths)-monthlySavings);
+    iceCummMonth += (iceYearly / 12);
+
+    if (evCummMonth < iceCummMonth && breakevenMonths === null) {
+      breakevenMonths = month;
       break;
     }
   }
@@ -1610,8 +1619,20 @@ function updateTCOChart() {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
         breakevenDiv.style.borderColor = '#28a745';
       }
-    } else if (breakeven) {
-      breakevenSpan.textContent = 'Year ' + breakeven;
+    } else if (breakevenMonths) {
+      const breakevenYears = Math.floor(breakevenMonths / 12);
+      const remainingMonths = breakevenMonths % 12;
+
+      let displayText = '';
+      if (breakevenYears > 0 && remainingMonths > 0) {
+        displayText = breakevenYears + ' Year' + (breakevenYears > 1 ? 's' : '') + ' ' + remainingMonths + ' Month' + (remainingMonths > 1 ? 's' : '');
+      } else if (breakevenYears > 0) {
+        displayText = breakevenYears + ' Year' + (breakevenYears > 1 ? 's' : '');
+      } else {
+        displayText = breakevenMonths + ' Month' + (breakevenMonths > 1 ? 's' : '');
+      }
+
+      breakevenSpan.textContent = displayText;
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
         breakevenDiv.style.borderColor = '#28a745';
@@ -1693,7 +1714,7 @@ function updateTCOChart() {
         },
         tooltip: {
           backgroundColor: 'rgba(0,0,0,0.8)',
-          padding: window.innerWidth < 768 ? 10 : 15,
+          padding: 15,
           titleFont: { size: window.innerWidth < 768 ? 12 : 15, weight: 'bold' },
           bodyFont: { size: window.innerWidth < 768 ? 11 : 14 },
           cornerRadius: 8,
