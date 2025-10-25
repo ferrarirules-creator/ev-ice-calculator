@@ -1643,7 +1643,7 @@ function updateTCOChart() {
     const loanInterest = Math.abs(priceDelta) * loanRate * year;
 
     // TCO Calculation
-    if (priceDelta > 0) {
+    if (priceDelta < 0) {
       // EV is more expensive initially
       // EV TCO = Delta + EV Running Costs - savings
 	  if(year===1) {
@@ -1690,7 +1690,7 @@ function updateTCOChart() {
   const breakevenDiv = document.getElementById('breakevenInfo');
 
   if (breakevenSpan) {
-    if (priceDelta < 0) {
+    if (priceDelta > 0) {
 	 breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
