@@ -1648,7 +1648,7 @@ function updateTCOChart() {
       // EV is more expensive initially
       // EV TCO = Delta + EV Running Costs - savings
 	  if(year===1) {
-	  evCumm = evCumm + priceDelta + evYearly + loanInterYearly - maturMedYearly
+	  evCumm = evCumm + Math.abs(priceDelta) + evYearly + loanInterYearly - maturMedYearly
 	  }
 	  else{
 	  evCumm = evCumm +  evYearly + loanInterYearly - maturMedYearly
