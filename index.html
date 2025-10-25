@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <td class="computed-cell mono" colspan="2" id="onroadIce">—</td>
     </tr>
     <tr>
-      <td class="result-label">Price Delta (EV - ICE)</td>
+      <td class="result-label">Price Delta (ICE - EV)</td>
       <td class="highlight-cell mono" colspan="4" id="delta">—</td>
     </tr>
 
@@ -690,7 +690,28 @@ document.addEventListener('DOMContentLoaded', function() {
     </tr>
   </table>
 </div>
+<!-- TCO Graph Section -->
+<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
+  <h2 style="justify-content: center; color: #2d8659; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px;">
+    📊 Total Cost of Ownership Timeline
+  </h2>
+  <p style="text-align: center; margin: 0 0 25px 0; color: #666; font-size: 14px;">
+    Year-by-year cumulative ownership costs showing when EV becomes cheaper than ICE. Chart shows the calculations based on the medium ROI scenario
+  </p>
 
+  <div style="background: #f9fafb; padding: 25px; border-radius: 10px; margin-bottom: 20px;">
+    <canvas id="tcoChart"></canvas>
+  </div>
+
+  <div id="breakevenInfo" style="text-align: center; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 10px; border: 2px solid #34a853;">
+    <p style="margin: 0; font-size: 18px; color: #2d8659; font-weight: 700;">
+      ⚡ Breakeven Point: <span id="breakevenText" style="color: #1e5631;">Calculating...</span>
+    </p>
+    <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">
+      EV becomes cheaper than ICE beyond this point
+    </p>
+  </div>
+</div>
 <!-- Download Section -->
 <div style="text-align: center; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; max-width: 800px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
   <button id="downloadBtn" style="
@@ -731,28 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
      
-<!-- TCO Graph Section -->
-<div style="background: white; border-radius: 12px; padding: 30px; margin: 30px auto; max-width: 1000px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5e7eb;">
-  <h2 style="color: #2d8659; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px;">
-    📊 Total Cost of Ownership Timeline
-  </h2>
-  <p style="margin: 0 0 25px 0; color: #666; font-size: 14px;">
-    Year-by-year cumulative ownership costs showing when EV becomes cheaper than ICE
-  </p>
 
-  <div style="background: #f9fafb; padding: 25px; border-radius: 10px; margin-bottom: 20px; position: relative; height: 400px;">
-    <canvas id="tcoChart"></canvas>
-  </div>
-
-  <div id="breakevenInfo" style="text-align: center; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 10px; border: 2px solid #34a853;">
-    <p style="margin: 0; font-size: 18px; color: #2d8659; font-weight: 700;">
-      ⚡ Breakeven Point: <span id="breakevenText" style="color: #1e5631;">Calculating...</span>
-    </p>
-    <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">
-      EV becomes cheaper than ICE beyond this point
-    </p>
-  </div>
-</div>
 
 </div>
 
@@ -845,7 +845,7 @@ const stateData = {
   'Arunachal Pradesh': { petrol: 103.8, diesel: 91.3, electricity: 6.62 },
   'Tripura': { petrol: 103.0, diesel: 90.5, electricity: 6.68 },
   'Rajasthan': { petrol: 104.72, diesel: 90.21, electricity: 6.7 },
-  'Punjab': { petrol: 94.3, diesel: 82.45, electricity: 6.71 },
+  'Punjab': { petrol: 97.78, diesel: 88.09, electricity: 6.71 },
   'Nagaland': { petrol: 108.5, diesel: 94.8, electricity: 6.72 },
   'Gujarat': { petrol: 94.49, diesel: 90.17, electricity: 6.79 },
   'Delhi': { petrol: 94.72, diesel: 87.62, electricity: 6.83 },
@@ -1131,7 +1131,7 @@ function recalc() {
 
   const onroadEv = (evEx - evDisc) + evRto + evIns + evTcs;
   const onroadIce = (iceEx - iceDisc) + iceRto + iceIns + iceTcs;
-  const delta = onroadEv - onroadIce;
+  const delta = onroadIce - onroadEv;
 
   const evCostPerKmCity = ePriceCity / evEffCity;
   const evCostPerKmHwy = ePriceHwy / evEffHwy;
@@ -1156,18 +1156,29 @@ function recalc() {
 
 // Loan interest using EMI formula (Excel PMT)
   const monthlyRate = loanRoi / 12;
-  const emi = calcPMT(monthlyRate, loanTenure, Math.max(0, delta));
+  const emi = calcPMT(monthlyRate, loanTenure, Math.abs(delta));
+
   const loanTotal = emi * loanTenure;
   var loanInterest;
   if (loanTotal===0){
    loanInterest = 0;
   }else{
-  loanInterest = loanTotal - Math.max(0, delta);
+  loanInterest = loanTotal - Math.abs(delta);
   }
-  
-  const savLow = matLow - loanTotal;
-  const savMed = matMed - loanTotal;
-  const savHigh = matHigh - loanTotal;
+  var savLow;
+  var savMed;
+  var savMed;
+
+  if (delta < 0){
+  savLow = matLow - loanTotal;
+  savMed = matMed - loanTotal;
+  savHigh = matHigh - loanTotal;
+  }
+  else{
+  savLow = matLow + Math.abs(delta);
+  savMed = matMed + Math.abs(delta);
+  savHigh = matHigh + Math.abs(delta);
+  }
 
   const resEv = evEx * Math.pow(1 - depEv, years);
   const resIce = iceEx * Math.pow(1 - depIce, years);
@@ -1456,203 +1467,128 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
-<script>
-// Download with watermark functionality
-document.addEventListener('DOMContentLoaded', function() {
-  const downloadBtn = document.getElementById('downloadBtn');
-  if (!downloadBtn) return;
-
-  downloadBtn.addEventListener('click', function() {
-    const btn = this;
-
-    // Check if html2canvas loaded
-    if (typeof html2canvas === 'undefined') {
-      alert('Download feature is loading. Please wait and try again.\n\nIf this persists, refresh the page.');
-      return;
-    }
-
-    const origText = btn.textContent;
-    btn.textContent = '⏳ Generating...';
-    btn.disabled = true;
-
-    // Create watermark
-    const watermark = document.createElement('div');
-    watermark.id = 'downloadWatermark';
-    watermark.style.position = 'fixed';
-    watermark.style.bottom = '25px';
-    watermark.style.right = '25px';
-    watermark.style.background = 'rgba(52, 168, 83, 0.95)';
-    watermark.style.color = 'white';
-    watermark.style.padding = '12px 24px';
-    watermark.style.borderRadius = '8px';
-    watermark.style.fontSize = '20px';
-    watermark.style.fontWeight = 'bold';
-    watermark.style.fontFamily = 'Arial, sans-serif';
-    watermark.style.zIndex = '999999';
-    watermark.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
-    watermark.textContent = '@ferrarirules86';
-    document.body.appendChild(watermark);
-
-    // Wait for render then capture
-    setTimeout(function() {
-      html2canvas(document.body, {
-        backgroundColor: '#f5f5f5',
-        scale: 2,
-        logging: false
-      }).then(function(canvas) {
-        // Remove watermark
-        const wm = document.getElementById('downloadWatermark');
-        if (wm) document.body.removeChild(wm);
-
-        // Create download
-        const img = canvas.toDataURL('image/png');
-        const a = document.createElement('a');
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        a.download = 'EV-ICE-Calculator-@ferrarirules86-' + year + '-' + month + '-' + day + '.png';
-        a.href = img;
-        a.click();
-
-        // Success feedback
-        btn.textContent = '✓ Downloaded with watermark!';
-        btn.style.background = '#4caf50';
-        setTimeout(function() {
-          btn.textContent = origText;
-          btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-          btn.disabled = false;
-        }, 2500);
-      }).catch(function(err) {
-        // Error handling
-        const wm = document.getElementById('downloadWatermark');
-        if (wm) document.body.removeChild(wm);
-
-        console.error(err);
-        btn.textContent = '❌ Error';
-        btn.style.background = '#d32f2f';
-        setTimeout(function() {
-          btn.textContent = origText;
-          btn.style.background = 'linear-gradient(135deg, #34a853 0%, #2d8659 100%)';
-          btn.disabled = false;
-        }, 3000);
-      });
-    }, 200);
-  });
-});
-</script>
-
-
 
 <script>
 // TCO Chart Generation
 let tcoChart = null;
 
 function updateTCOChart() {
+  console.log('updateTCOChart called');
+
   const years = parseFloat(document.getElementById('years')?.value) || 7;
   const evEx = parseFloat(document.getElementById('evEx')?.value) || 0;
   const iceEx = parseFloat(document.getElementById('iceEx')?.value) || 0;
-  
-  if (!evEx || !iceEx) return;
-  
-  // Get MONTHLY costs from evTotal and iceTotal (these IDs exist!)
+
+  console.log('Years:', years, 'EV Ex:', evEx, 'ICE Ex:', iceEx);
+
+  if (!evEx || !iceEx) {
+    console.log('Missing ex-showroom prices, skipping chart');
+    return;
+  }
+
+  // Get MONTHLY costs from evTotal and iceTotal
   const evMonthlyElem = document.getElementById('evTotal');
   const iceMonthlyElem = document.getElementById('iceTotal');
+  const matMedElem = document.getElementById('matMed');
+  const loanInterElem = document.getElementById('loanInt');
   
   const evMonthly = evMonthlyElem ? parseFloat(evMonthlyElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
   const iceMonthly = iceMonthlyElem ? parseFloat(iceMonthlyElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
-  
+  const maturMed = matMedElem ? parseFloat(matMedElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+  const loanInter = loanInterElem ? parseFloat(loanInterElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+
+  console.log('EV Monthly:', evMonthly, 'ICE Monthly:', iceMonthly);
+
   // Convert to yearly
   const evYearly = evMonthly * 12;
   const iceYearly = iceMonthly * 12;
-  
-  // Build data
+
+  // Get price delta (EV - ICE)
+  const deltaElem = document.getElementById('delta') || document.getElementById('deltaRes');
+  const priceDelta = deltaElem ? parseFloat(deltaElem.textContent.replace(/[^0-9.-]/g, '')) || 0 : (evEx - iceEx);
+
+  // Get monthly savings
+  const saveMoElem = document.getElementById('saveMo');
+  const monthlySavings = saveMoElem ? parseFloat(saveMoElem.textContent.replace(/[^0-9.-]/g, '')) || 0 : (iceMonthly - evMonthly);
+
+  // Get loan ROI (if applicable)
+  const loanRoiElem = document.getElementById('loanRoi');
+  const loanRate = loanRoiElem ? parseFloat(loanRoiElem.value) / 100 : 0.09; // default 9%
+
+  // Get investment ROI (use medium risk as default)
+  const roiMedElem = document.getElementById('roiMed');
+  const investmentRate = roiMedElem ? parseFloat(roiMedElem.value) / 100 : 0.09; // default 9%
+
+  console.log('Price Delta:', priceDelta, 'Monthly Savings:', monthlySavings);
+  console.log('Loan Rate:', loanRate, 'Investment Rate:', investmentRate);
+
+  // Build data arrays
   const labels = ['Purchase'];
-  const evData = [evEx];
-  const iceData = [iceEx];
-  
-  for (let y = 1; y <= years; y++) {
-    labels.push('Year ' + y);
-    evData.push(evData[y-1] + evYearly);
-    iceData.push(iceData[y-1] + iceYearly);
+  const evData = [];
+  const iceData = [];
+  const maturMedYearly = (maturMed / years) - (monthlySavings*12);
+  const loanInterYearly = loanInter / years;
+  console.log('Loan Med yearly:', loanInterYearly, 'Maturity med:', maturMedYearly);
+  // Set initial costs based on delta
+  if (priceDelta < 0) {
+    // EV more expensive - EV starts at delta, ICE at 0
+    evData.push(Math.abs(priceDelta));
+    iceData.push(0);
+  } else {
+    // ICE more expensive - ICE starts at abs(delta), EV at 0
+    evData.push(0);
+    iceData.push(Math.abs(priceDelta));
   }
-  
-  // Find breakeven
-  let breakeven = null;
-  for (let i = 1; i <= years; i++) {
-    if (evData[i] < iceData[i]) {
-      breakeven = i;
-      break;
-    }
-  }
-  
-  // Update breakeven text
-  const breakevenSpan = document.getElementById('breakevenText');
-  if (breakevenSpan) {
-    if (breakeven) {
-      breakevenSpan.textContent = 'Year ' + breakeven + ' (' + (breakeven*12) + ' months)';
-    } else if (evData[years] < iceData[years]) {
-      breakevenSpan.textContent = 'EV is cheaper from Day 1!';
+	var evCumm = 0;
+	var iceCumm = 0;
+  // Calculate year-by-year TCO
+  for (let year = 1; year <= years; year++) {
+    labels.push('Year ' + year);
+
+    const months = year * 12;
+
+    // Calculate investment returns on monthly savings (Future Value of Annuity)
+    const monthlyRate = investmentRate / 12;
+    const investmentReturns = monthlySavings > 0 && monthlyRate > 0
+      ? monthlySavings * (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate
+      : monthlySavings * months;
+
+    // Calculate loan interest on delta (using simple interest for clarity)
+    const loanInterest = Math.abs(priceDelta) * loanRate * year;
+
+    // TCO Calculation
+    if (priceDelta < 0) {
+      // EV is more expensive initially
+      // EV TCO = Delta + EV Running Costs - savings
+	  if(year===1) {
+	  evCumm = evCumm + Math.abs(priceDelta) + evYearly + loanInterYearly - maturMedYearly
+	  }
+	  else{
+	  evCumm = evCumm +  evYearly + loanInterYearly - maturMedYearly
+	  }
+	 
+	  evData.push(evCumm);
+      // ICE TCO = ICE Running Costs only
+	  iceCumm = iceCumm + iceYearly;
+      iceData.push(iceCumm);
     } else {
-      breakevenSpan.textContent = 'Beyond ' + years + ' years';
+      // ICE is more expensive initially
+      // EV TCO = EV Running Costs only
+	  evCumm = evCumm + evYearly + loanInterYearly - maturMedYearly
+      evData.push(evCumm);
+      // ICE TCO = Delta + ICE Running Costs + Loan Interest - Investment Returns on Savings
+	  if(year===1) {
+	  iceCumm = iceCumm + Math.abs(priceDelta) + iceYearly
+	  }
+	  else{
+	  iceCumm = iceCumm + iceYearly
+	  }
+	  
+      iceData.push(iceCumm);
     }
   }
-  
-  // Destroy old chart
-  if (tcoChart) tcoChart.destroy();
-  
-  // Create chart
-  const ctx = document.getElementById('tcoChart');
-  if (!ctx) return;
-  
-  tcoChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'EV Cost',
-        data: evData,
-        borderColor: '#34a853',
-        backgroundColor: 'rgba(52,168,83,0.1)',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true
-      }, {
-        label: 'ICE Cost',
-        data: iceData,
-        borderColor: '#ea4335',
-        backgroundColor: 'rgba(234,67,53,0.1)',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      aspectRatio: 2,
-      plugins: {
-        legend: { position: 'top' },
-        tooltip: {
-          callbacks: {
-            label: function(ctx) {
-              return ctx.dataset.label + ': ₹' + (ctx.parsed.y/100000).toFixed(2) + 'L';
-            }
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: 'Cost (₹L)' },
-          ticks: {
-            callback: function(val) { return '₹' + (val/100000).toFixed(1) + 'L'; }
-          }
-        }
-      }
-    }
-  });
-}
+
+  console.log('Chart data prepared:', {labels, evData, iceData});
 
   // Find breakeven
   let breakeven = null;
@@ -1663,31 +1599,48 @@ function updateTCOChart() {
     }
   }
 
-  // Update breakeven display
+  // Update breakeven text
   const breakevenSpan = document.getElementById('breakevenText');
   const breakevenDiv = document.getElementById('breakevenInfo');
 
-  if (breakeven) {
-    breakevenSpan.textContent = 'Year ' + breakeven + ' (' + (breakeven * 12) + ' months)';
-    breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
-    breakevenDiv.style.borderColor = '#28a745';
-  } else if (evData[years] < iceData[years]) {
-    breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
-    breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
-    breakevenDiv.style.borderColor = '#28a745';
-  } else {
-    breakevenSpan.textContent = 'Beyond ' + years + ' years';
-    breakevenDiv.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%)';
-    breakevenDiv.style.borderColor = '#ffc107';
+  if (breakevenSpan) {
+    if (priceDelta > 0) {
+	 breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
+      if (breakevenDiv) {
+        breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+        breakevenDiv.style.borderColor = '#28a745';
+      }
+    } else if (breakeven) {
+      breakevenSpan.textContent = 'Year ' + breakeven;
+      if (breakevenDiv) {
+        breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+        breakevenDiv.style.borderColor = '#28a745';
+      }
+    } else {
+      breakevenSpan.textContent = 'Beyond ' + years + ' years';
+      if (breakevenDiv) {
+        breakevenDiv.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%)';
+        breakevenDiv.style.borderColor = '#ffc107';
+      }
+    }
   }
 
-  // Destroy existing chart
-  if (tcoChart) tcoChart.destroy();
+  // Destroy old chart
+  if (tcoChart) {
+    console.log('Destroying old chart');
+    tcoChart.destroy();
+  }
+
+  // Get canvas
+  const ctx = document.getElementById('tcoChart');
+  if (!ctx) {
+    console.error('Canvas element #tcoChart not found!');
+    return;
+  }
+
+  console.log('Creating chart...');
 
   // Create chart
-  const ctx = document.getElementById('tcoChart');
-  if (!ctx) return;
-
   tcoChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -1722,7 +1675,7 @@ function updateTCOChart() {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
       aspectRatio: 2,
       plugins: {
         title: {
@@ -1758,26 +1711,25 @@ function updateTCOChart() {
           title: {
             display: true,
             text: 'Cumulative Cost (₹ Lakhs)',
-            font: { size: 14, weight: 'bold' },
+            font: { size: 14, weight: '600' },
             color: '#333'
           },
           ticks: {
+            font: { size: 13 },
+            color: '#666',
             callback: function(val) {
               return '₹' + (val / 100000).toFixed(1) + 'L';
-            },
-            font: { size: 13 },
-            color: '#666'
+            }
           },
           grid: {
-            color: 'rgba(0,0,0,0.08)',
-            lineWidth: 1
+            color: 'rgba(0,0,0,0.05)'
           }
         },
         x: {
           title: {
             display: true,
-            text: 'Ownership Timeline',
-            font: { size: 14, weight: 'bold' },
+            text: 'Ownership Period',
+            font: { size: 14, weight: '600' },
             color: '#333'
           },
           ticks: {
@@ -1795,18 +1747,54 @@ function updateTCOChart() {
       }
     }
   });
+
+  console.log('Chart created successfully!');
 }
 
-// Hook to recalc
-const origRecalc = window.recalc
-window.recalc = function() {
-  if (origRecalc) origRecalc()
-  setTimeout(updateTCOChart, 150)
-};
+// Hook to recalc function if it exists
+if (typeof window.recalc !== 'undefined') {
+  const origRecalc = window.recalc;
+  window.recalc = function() {
+    if (origRecalc) origRecalc();
+    setTimeout(updateTCOChart, 150);
+  };
+}
 
-// Initial load
+// Event listeners for all input fields
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, setting up event listeners');
+
+  const triggerFields = ['years', 'evEx', 'iceEx', 'citySplit', 'highwaySplit', 
+                         'monthlyKm', 'evCityEfficiency', 'evHighwayEfficiency',
+                         'iceCityEfficiency', 'iceHighwayEfficiency',
+                         'evElectricityCity', 'evElectricityHighway',
+                         'iceFuelCity', 'iceFuelHighway', 'roiMed', 'loanRoi'];
+
+  triggerFields.forEach(id => {
+    const elem = document.getElementById(id);
+    if (elem) {
+      elem.addEventListener('input', function() {
+        setTimeout(updateTCOChart, 200);
+      });
+      elem.addEventListener('change', function() {
+        setTimeout(updateTCOChart, 200);
+      });
+    }
+  });
+
+  // Fallback: trigger on any number input
+  document.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+    input.addEventListener('input', () => setTimeout(updateTCOChart, 250));
+  });
+
+  console.log('Event listeners attached, calling updateTCOChart in 1 second');
+  setTimeout(updateTCOChart, 1000);
+});
+
+// Also try on window load
 window.addEventListener('load', function() {
-  setTimeout(updateTCOChart, 600);
+  console.log('Window loaded, calling updateTCOChart');
+  setTimeout(updateTCOChart, 1200);
 });
 </script>
 
