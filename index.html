@@ -1253,6 +1253,8 @@ function recalc() {
   document.getElementById('overallHigh').textContent = fmt(overallHigh);
 
   // Apply conditional colors to key metrics
+// Apply conditional colors after DOM updates
+setTimeout(() => {
   applyConditionalColor('delta', delta);
   applyConditionalColor('saveMo', saveMonthly);
   applyConditionalColor('savLow', savLow);
@@ -1262,17 +1264,8 @@ function recalc() {
   applyConditionalColor('overallLow', overallLow);
   applyConditionalColor('overallMed', overallMed);
   applyConditionalColor('overallHigh', overallHigh);
-  
-  // Apply conditional colors to key metrics
-  applyConditionalColor('delta', delta);
-  applyConditionalColor('saveMo', saveMonthly);
-  applyConditionalColor('savLow', savLow);
-  applyConditionalColor('savMed', savMed);
-  applyConditionalColor('savHigh', savHigh);
-  applyConditionalColor('deltaRes', deltaResale);
-  applyConditionalColor('overallLow', overallLow);
-  applyConditionalColor('overallMed', overallMed);
-  applyConditionalColor('overallHigh', overallHigh);
+}, 0);
+
 }
 
 document.getElementById('cityShare').addEventListener('input', () => adjustSplit('city'));
