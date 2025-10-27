@@ -530,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <td class="input-cell" colspan="2"><input type="text" id="evDisc" placeholder="0"></td>
       <td class="input-cell" colspan="2"><input type="text" id="iceDisc" placeholder="0"></td>
     </tr>
+	 
     <tr>
       <td class="label-cell">RTO (₹)</td>
       <td class="input-cell" colspan="2"><input type="text" id="evRto" placeholder="e.g., 16,000"></td>
@@ -556,7 +557,22 @@ document.addEventListener('DOMContentLoaded', function() {
     </tr>
 
     <tr class="empty-row"><td colspan="5"></td></tr>
+   <!-- Loan Interest -->
+    <tr><td colspan="5" class="section-header">💳 Loan Details</td></tr>
+	  <tr>
+        <td class="label-cell">Down Payment Amount (₹)</td>
+		<td class="input-cell" colspan="4"><input type="text" id="downAmt" oninput="recalc()" placeholder="e.g., 2,00,000"></td>
+      </tr>
+    <tr>
+      <td class="label-cell">Loan Rate of Interest (%)</td>
+      <td class="input-cell input-with-suffix" colspan="4"><input type="text" id="loanRoi" value="8.75"></td>
+    </tr>
+    <tr>
+      <td class="label-cell">Tenure (months)</td>
+      <td class="input-cell" colspan="4"><input type="text" id="loanTenure" value="60"></td>
+    </tr>
 
+    <tr class="empty-row"><td colspan="5"></td></tr>
     <!-- Running Cost -->
     <tr><td colspan="5" class="section-header">⚡ Running Costs</td></tr>
     <tr>
@@ -606,14 +622,58 @@ document.addEventListener('DOMContentLoaded', function() {
       <td class="computed-cell mono" colspan="2" id="iceTotal">—</td>
     </tr>
     <tr>
-      <td class="result-label">Monthly Savings (₹)</td>
+      <td class="result-label">Monthly Fuel Savings (₹)</td>
       <td class="highlight-cell mono" colspan="4" id="saveMo">—</td>
     </tr>
 
     <tr class="empty-row"><td colspan="5"></td></tr>
+<!-- Monthly Outgo Simulator Section -->
 
+      <tr>
+        <td colspan="5" class="section-header">💳 Monthly Outgo</td>
+      </tr>
+      <tr>
+        <td class="label-cell"></td>
+      <td class="center-header" colspan="2">Electric Vehicle ⚡</td>
+      <td class="center-header" colspan="2">ICE Vehicle ⛽</td>
+      </tr>
+   
+      <tr>
+        <td class="label-cell">Loan Amount (₹)</td>
+        <td class="computed-cell mono" colspan="2" id="evLoanAmt">—</td>
+        <td class="computed-cell mono" colspan="2" id="iceLoanAmt">—</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Monthly EMI (₹)</td>
+        <td class="computed-cell mono" colspan="2" id="evEMI">—</td>
+        <td class="computed-cell mono" colspan="2" id="iceEMI">—</td>
+      </tr>
+      <tr class="highlight-row">
+        <td class="label-cell"><strong>EMI + Fuel Cost (₹)</strong></td>
+        <td class="computed-cell mono" colspan="2" id="evTotalOutgo"><strong>—</strong></td>
+        <td class="computed-cell mono" colspan="2" id="iceTotalOutgo"><strong>—</strong></td>
+      </tr>
+	  <!-- Row for savings during loan -->
+<tr id="rowDuringLoan" class="highlight-row">
+  <td class="label-cell"><strong>Monthly Savings during loan tenure (₹)</strong></td>
+  <td colspan="4" class="computed-cell mono" id="saveDuringLoan"><strong>—</strong></td>
+</tr>
+
+<!-- Row for savings post loan -->
+<tr id="rowPostLoan" class="highlight-row">
+  <td class="label-cell"><strong>Monthly Savings post loan completion (₹)</strong></td>
+  <td colspan="4" class="computed-cell mono" id="savePostLoan"><strong>—</strong></td>
+</tr>
+
+<!-- Single row when no loan -->
+<tr id="rowNoLoan" class="highlight-row" style="display: none;">
+  <td class="label-cell"><strong>Monthly Savings (₹)</strong></td>
+  <td colspan="4" class="computed-cell mono" id="saveNoLoan"><strong>—</strong></td>
+</tr>
+
+	 <tr class="empty-row"><td colspan="5"></td></tr>
     <!-- Investment Savings -->
-    <tr><td colspan="5" class="section-header">💰 Investment Returns on Fuel Savings</td></tr>
+    <tr><td colspan="5" class="section-header">💰 Investment Returns on Savings</td></tr>
     <tr>
       <td class="label-cell">Risk Level</td>
       <td class="center-header">Low (RD)</td>
@@ -639,49 +699,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <tr class="empty-row"><td colspan="5"></td></tr>
 
-    <!-- Loan Interest -->
-    <tr><td colspan="5" class="section-header">💳 Loan on Price Delta</td></tr>
-    <tr>
-      <td class="label-cell">Loan Rate of Interest (%)</td>
-      <td class="input-cell input-with-suffix" colspan="4"><input type="text" id="loanRoi" value="8.75"></td>
-    </tr>
-    <tr>
-      <td class="label-cell">Tenure (months)</td>
-      <td class="input-cell" colspan="4"><input type="text" id="loanTenure" value="60"></td>
-    </tr>
-    <tr>
-      <td class="result-label">Interest Paid (₹)</td>
-      <td class="computed-cell mono" colspan="4" id="loanInt">—</td>
-    </tr>
-    <tr>
-      <td class="result-label">Total amount paid (₹)</td>
-      <td class="computed-cell mono" colspan="4" id="loanTot">—</td>
-    </tr>
-
-    <tr class="empty-row"><td colspan="5"></td></tr>
-
-    <!-- Total Savings -->
-	<tr><td colspan="5" class="section-header">📈 Savings without Depreciation</td></tr>
-    <tr>
-      <td class="label-cell">Investment Scenario</td>
-      <td class="center-header">Low (RD)</td>
-      <td class="center-header">Medium (Debt)</td>
-      <td class="center-header" colspan="2">High (Equity/MF)</td>
-    </tr>
-    <tr>
-      <td class="result-label">Savings (Investment - Loan) (₹)</td>
-      <td class="highlight-cell mono" id="savLow">—</td>
-      <td class="highlight-cell mono" id="savMed">—</td>
-      <td class="highlight-cell mono" colspan="2" id="savHigh">—</td>
-    </tr>
-
-    <tr class="empty-row"><td colspan="5"></td></tr>
-
     <!-- Depreciation -->
     <tr><td colspan="5" class="section-header">📉 Depreciation & Resale Value</td></tr>
     <tr>
       <td class="label-cell"></td>
-      <td class="center-header" colspan="2">Electric Vehicle </td>
+      <td class="center-header" colspan="2">Electric Vehicle ⚡</td>
       <td class="center-header" colspan="2">ICE Vehicle ⛽</td>
     </tr>
     <tr>
@@ -1166,11 +1188,71 @@ function recalc() {
 
   const evMonthly = evCityCost + evHwyCost;
   const iceMonthly = iceCityCost + iceHwyCost;
-  const saveMonthly = Math.max(0, iceMonthly - evMonthly);
+  
+ 
+    // ============================================
+  // Monthly Outgo Simulator Calculations
+  // ============================================
+  const downAmt = parseIndian(document.getElementById('downAmt').value) || 0;
+  // Calculate down payment amounts
+  const evDownPayment = downAmt;
+  const iceDownPayment = downAmt;
 
-  const matLow = calcMaturity(saveMonthly, roiLow, months);
-  const matMed = calcMaturity(saveMonthly, roiMed, months);
-  const matHigh = calcMaturity(saveMonthly, roiHigh, months);
+  // Calculate loan amounts
+  let evLoanAmount = 0;
+  let iceLoanAmount = 0;
+
+  // Calculate monthly EMI using PMT formula
+  // EMI = P * r * (1 + r)^n / ((1 + r)^n - 1)
+  const monthlyRateOutgo = loanRoi / 12;
+  const n = loanTenure;
+
+  let evEMI = 0;
+  let iceEMI = 0;
+
+  if (monthlyRateOutgo > 0 && n > 0) {
+    evLoanAmount = onroadEv - evDownPayment;
+    iceLoanAmount = onroadIce - iceDownPayment;
+    const factor = Math.pow(1 + monthlyRateOutgo, n);
+    evEMI = calcPMT(monthlyRateOutgo, n, Math.abs(evLoanAmount));
+    iceEMI = calcPMT(monthlyRateOutgo, n, Math.abs(iceLoanAmount));
+  }
+
+  // Total monthly outgo = EMI + Running cost
+  const evTotalOutgo = evEMI + evMonthly;
+  const iceTotalOutgo = iceEMI + iceMonthly;
+  const saveDuringLoanAmt = iceTotalOutgo - evTotalOutgo;
+  
+const saveMonthly = Math.max(0, iceMonthly - evMonthly);
+  // Display the monthly outgo values
+  document.getElementById('evLoanAmt').textContent = fmt(evLoanAmount);
+  document.getElementById('iceLoanAmt').textContent = fmt(iceLoanAmount);
+  document.getElementById('evEMI').textContent = fmt(evEMI);
+  document.getElementById('iceEMI').textContent = fmt(iceEMI);
+  document.getElementById('evTotalOutgo').textContent = fmt(evTotalOutgo);
+  document.getElementById('iceTotalOutgo').textContent = fmt(iceTotalOutgo);
+
+
+let matLow = 0;
+  let matMed = 0;
+  let matHigh = 0;
+
+if ((months-loanTenure)>0){
+  const deltaMonths = months-loanTenure;
+  matLow = calcMaturity(saveDuringLoanAmt, roiLow, loanTenure)+calcMaturity(saveMonthly, roiLow, deltaMonths);
+  matMed = calcMaturity(saveDuringLoanAmt, roiMed, loanTenure)+calcMaturity(saveMonthly, roiMed, deltaMonths);
+  matHigh = calcMaturity(saveDuringLoanAmt, roiHigh, loanTenure)+calcMaturity(saveMonthly, roiHigh, deltaMonths);
+  }
+else if ((months-loanTenure)===0){
+  matLow = calcMaturity(saveDuringLoanAmt, roiLow, months);
+  matMed = calcMaturity(saveDuringLoanAmt, roiMed, months);
+  matHigh = calcMaturity(saveDuringLoanAmt, roiHigh, months);
+}
+else {
+  matLow = calcMaturity(saveMonthly, roiLow, months);
+  matMed = calcMaturity(saveMonthly, roiMed, months);
+  matHigh = calcMaturity(saveMonthly, roiHigh, months);
+}
 
 // Loan interest using EMI formula (Excel PMT)
   const monthlyRate = loanRoi / 12;
@@ -1183,28 +1265,65 @@ function recalc() {
   }else{
   loanInterest = loanTotal - Math.abs(delta);
   }
-  var savLow;
-  var savMed;
-  var savMed;
-
-  if (delta < 0){
-  savLow = matLow - loanTotal;
-  savMed = matMed - loanTotal;
-  savHigh = matHigh - loanTotal;
-  }
-  else{
-  savLow = matLow + Math.abs(delta);
-  savMed = matMed + Math.abs(delta);
-  savHigh = matHigh + Math.abs(delta);
-  }
-
+ 
   const resEv = evEx * Math.pow(1 - depEv, years);
   const resIce = iceEx * Math.pow(1 - depIce, years);
   const deltaResale = resIce - resEv;
 
-  const overallLow = savLow - deltaResale;
-  const overallMed = savMed - deltaResale;
-  const overallHigh = savHigh - deltaResale;
+  const overallLow = matLow - deltaResale;
+  const overallMed = matMed - deltaResale;
+  const overallHigh = matHigh - deltaResale;
+
+
+// Check if user is taking a loan
+const hasLoan = (loanTenure > 0 && loanRoi>0);
+
+// Show/hide rows based on loan status
+if (hasLoan) {
+  // Show during and post loan rows
+  document.getElementById('rowDuringLoan').style.display = '';
+  if ((months-loanTenure)>0){
+  document.getElementById('rowPostLoan').style.display = '';
+  }else{
+  document.getElementById('rowPostLoan').style.display = 'none';
+  }
+  document.getElementById('rowNoLoan').style.display = 'none';
+  
+  // Calculate during loan (includes EMI difference)
+  const saveDuringLoan = iceTotalOutgo - evTotalOutgo;
+  document.getElementById('saveDuringLoan').textContent = fmt(saveDuringLoan);
+  applyConditionalColor('saveDuringLoan', saveDuringLoan);
+  
+  // Calculate post loan (only fuel difference)
+  const savePostLoan = iceMonthly - evMonthly;
+  if ((months-loanTenure)>0){
+  document.getElementById('savePostLoan').textContent = fmt(savePostLoan);
+  }
+  applyConditionalColor('savePostLoan', savePostLoan);
+  
+} else {
+  // No loan - show single savings row
+  document.getElementById('rowDuringLoan').style.display = 'none';
+  document.getElementById('rowPostLoan').style.display = 'none';
+  document.getElementById('rowNoLoan').style.display = '';
+  
+  // Just fuel savings (no EMI involved)
+  const saveNoLoan = iceMonthly - evMonthly;
+  document.getElementById('saveNoLoan').textContent = fmt(saveNoLoan);
+  applyConditionalColor('saveNoLoan', saveNoLoan);
+}
+
+// Update row labels with actual years
+if (hasLoan) {
+  const loanYears = Math.ceil(loanTenure / 12);
+  const postLoanYears = Math.max(0, years - loanYears);
+  
+  document.querySelector('#rowDuringLoan .label-cell').innerHTML = 
+    `<strong>Monthly Savings during ${loanYears} year(s) loan tenure (₹)</strong>`;
+  document.querySelector('#rowPostLoan .label-cell').innerHTML = 
+    `<strong>Monthly Savings for ${postLoanYears} year(s) post loan (₹)</strong>`;
+}
+
 
   document.getElementById('evIns').textContent = fmt(evIns);
   document.getElementById('iceIns').textContent = fmt(iceIns);
@@ -1227,11 +1346,6 @@ function recalc() {
   document.getElementById('matLow').textContent = fmt(matLow);
   document.getElementById('matMed').textContent = fmt(matMed);
   document.getElementById('matHigh').textContent = fmt(matHigh);
-  document.getElementById('loanInt').textContent = fmt(loanInterest);
-  document.getElementById('loanTot').textContent = fmt(loanTotal);
-  document.getElementById('savLow').textContent = fmt(savLow);
-  document.getElementById('savMed').textContent = fmt(savMed);
-  document.getElementById('savHigh').textContent = fmt(savHigh);
   document.getElementById('resEv').textContent = fmt(resEv);
   document.getElementById('resIce').textContent = fmt(resIce);
   document.getElementById('deltaRes').textContent = fmt(deltaResale);
@@ -1244,13 +1358,13 @@ function recalc() {
 setTimeout(() => {
   applyConditionalColor('delta', delta);
   applyConditionalColor('saveMo', saveMonthly);
-  applyConditionalColor('savLow', savLow);
-  applyConditionalColor('savMed', savMed);
-  applyConditionalColor('savHigh', savHigh);
-  applyConditionalColor('deltaRes', deltaResale);
+   applyConditionalColor('deltaRes', deltaResale);
   applyConditionalColor('overallLow', overallLow);
   applyConditionalColor('overallMed', overallMed);
   applyConditionalColor('overallHigh', overallHigh);
+  applyConditionalColor('saveDuringLoan', saveDuringLoanAmt);
+  applyConditionalColor('savePostLoan', saveMonthly);
+  applyConditionalColor('saveNoLoan', saveMonthly);
 }, 0);
 
 }
@@ -1383,100 +1497,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </p>
 </div>
 
-<script>
-// Copyright Protection Script
-(function() {
-  'use strict';
 
-  // Disable right-click context menu
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-  }, false);
-
-  // Disable keyboard shortcuts for viewing/saving source
-  document.addEventListener('keydown', function(e) {
-    // Ctrl+U (View Source)
-    if (e.ctrlKey && e.keyCode === 85) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+S (Save Page)
-    if (e.ctrlKey && e.keyCode === 83) {
-      e.preventDefault();
-      return false;
-    }
-    // F12 (Developer Tools)
-    if (e.keyCode === 123) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+Shift+I (DevTools)
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+Shift+J (Console)
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+Shift+C (Inspect Element)
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
-      e.preventDefault();
-      return false;
-    }
-  }, false);
-
-  // Disable text selection (but allow in input fields)
-  document.addEventListener('selectstart', function(e) {
-    if (e.target.tagName === 'INPUT' || 
-        e.target.tagName === 'SELECT' || 
-        e.target.tagName === 'TEXTAREA') {
-      return true;
-    }
-    e.preventDefault();
-    return false;
-  }, false);
-
-  // Disable drag and drop
-  document.addEventListener('dragstart', function(e) {
-    e.preventDefault();
-    return false;
-  }, false);
-
-  // Console copyright warning
-  console.clear();
-  console.log('%c⚠️ COPYRIGHT NOTICE ⚠️', 
-    'color: red; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);');
-  console.log('%c© 2025 EV vs ICE Ownership Cost Calculator', 
-    'font-size: 16px; font-weight: bold; color: #34a853;');
-  console.log('%cAll Rights Reserved', 
-    'font-size: 14px; color: #666;');
-  console.log('%cThis calculator is proprietary software.', 
-    'font-size: 12px; color: #333;');
-  console.log('%cUnauthorized copying, modification, or distribution is prohibited.', 
-    'font-size: 12px; color: #d32f2f; font-weight: bold;');
-  console.log('%cIf youre interested in using this calculator, please contact the owner.', 
-    'font-size: 11px; color: #666; font-style: italic;');
-
-  // Detect DevTools open (basic detection)
-  var devtools = {open: false};
-  var threshold = 160;
-  var check = setInterval(function() {
-    if (window.outerWidth - window.innerWidth > threshold || 
-        window.outerHeight - window.innerHeight > threshold) {
-      if (!devtools.open) {
-        console.clear();
-        console.log('%c⚠️ Developer Tools Detected', 'color: red; font-size: 20px; font-weight: bold;');
-        console.log('%cThis calculator is copyright protected.', 'font-size: 14px;');
-      }
-      devtools.open = true;
-    }
-  }, 500);
-
-})();
-</script>
 
 
 <script>
@@ -1487,163 +1508,118 @@ function updateTCOChart() {
   console.log('updateTCOChart called');
 
   const years = parseFloat(document.getElementById('years')?.value) || 7;
-  const evEx = parseFloat(document.getElementById('evEx')?.value) || 0;
-  const iceEx = parseFloat(document.getElementById('iceEx')?.value) || 0;
+  const loanTenure = parseFloat(document.getElementById('loanTenure')?.value) || 0;
+  const downAmt = parseIndian(document.getElementById('downAmt')?.value) || 0;
 
-  console.log('Years:', years, 'EV Ex:', evEx, 'ICE Ex:', iceEx);
+  // Get on-road prices
+  const evOnroad = parseIndian(document.getElementById('onroadEv')?.textContent) || 0;
+  const iceOnroad = parseIndian(document.getElementById('onroadIce')?.textContent) || 0;
 
-  if (!evEx || !iceEx) {
-    console.log('Missing ex-showroom prices, skipping chart');
+  if (!evOnroad || !iceOnroad) {
+    console.log('Missing on-road prices, skipping chart');
     return;
   }
 
-  // Get MONTHLY costs from evTotal and iceTotal
+  // Get monthly running costs
   const evMonthlyElem = document.getElementById('evTotal');
   const iceMonthlyElem = document.getElementById('iceTotal');
-  const matMedElem = document.getElementById('matMed');
-  const loanInterElem = document.getElementById('loanInt');
-  
   const evMonthly = evMonthlyElem ? parseFloat(evMonthlyElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
   const iceMonthly = iceMonthlyElem ? parseFloat(iceMonthlyElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+
+  // Get EMI values (from Monthly Outgo section)
+  const evEMIElem = document.getElementById('evEMI');
+  const iceEMIElem = document.getElementById('iceEMI');
+  const evEMI = evEMIElem ? parseFloat(evEMIElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+  const iceEMI = iceEMIElem ? parseFloat(iceEMIElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+
+  // Get investment returns (Medium scenario)
+  const matMedElem = document.getElementById('matMed');
   const maturMed = matMedElem ? parseFloat(matMedElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
-  const loanInter = loanInterElem ? parseFloat(loanInterElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
 
-  console.log('EV Monthly:', evMonthly, 'ICE Monthly:', iceMonthly);
+  // Get resale values
+  const resEvElem = document.getElementById('resEv');
+  const resIceElem = document.getElementById('resIce');
+  const resEv = resEvElem ? parseFloat(resEvElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
+  const resIce = resIceElem ? parseFloat(resIceElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0;
 
-  // Convert to yearly
-  const evYearly = evMonthly * 12;
-  const iceYearly = iceMonthly * 12;
+  console.log('Values:', {evMonthly, iceMonthly, evEMI, iceEMI, downAmt, loanTenure});
 
-  // Get price delta (EV - ICE)
-  const deltaElem = document.getElementById('delta') || document.getElementById('deltaRes');
-  const priceDelta = deltaElem ? parseFloat(deltaElem.textContent.replace(/[^0-9.-]/g, '')) || 0 : (evEx - iceEx);
+  // Calculate loan tenure in years
+  const loanYears = Math.ceil(loanTenure / 12);
+  const hasLoan = loanTenure > 0 && downAmt < Math.min(evOnroad, iceOnroad);
 
-  // Get monthly savings
-  const saveMoElem = document.getElementById('saveMo');
-  const monthlySavings = saveMoElem ? parseFloat(saveMoElem.textContent.replace(/[^0-9.-]/g, '')) || 0 : (iceMonthly - evMonthly);
-
-  // Get loan ROI (if applicable)
-  const loanRoiElem = document.getElementById('loanRoi');
-  const loanRate = loanRoiElem ? parseFloat(loanRoiElem.value) / 100 : 0.09; // default 9%
-
-  // Get investment ROI (use medium risk as default)
-  const roiMedElem = document.getElementById('roiMed');
-  const investmentRate = roiMedElem ? parseFloat(roiMedElem.value) / 100 : 0.09; // default 9%
-
-  console.log('Price Delta:', priceDelta, 'Monthly Savings:', monthlySavings);
-  console.log('Loan Rate:', loanRate, 'Investment Rate:', investmentRate);
-
-  // Build data arrays
-  const labels = ['Purchase'];
+  // Initialize data arrays
   const evData = [];
   const iceData = [];
-  const maturMedYearly = (maturMed / years) - (monthlySavings*12);
-  const loanInterYearly = loanInter / years;
-  console.log('Loan Med yearly:', loanInterYearly, 'Maturity med:', maturMedYearly);
-  // Set initial costs based on delta
-  if (priceDelta < 0) {
-    // EV more expensive - EV starts at delta, ICE at 0
-    evData.push(Math.abs(priceDelta));
-    iceData.push(0);
-  } else {
-    // ICE more expensive - ICE starts at abs(delta), EV at 0
-    evData.push(0);
-    iceData.push(Math.abs(priceDelta));
-  }
-	var evCumm = 0;
-	var iceCumm = 0;
-  // Calculate year-by-year TCO
-  for (let year = 1; year <= years; year++) {
-    labels.push('Year ' + year);
+  const labels = ['Purchase'];
 
-    const months = year * 12;
+  // Year 0: Down payment
+  evData.push(downAmt);
+  iceData.push(downAmt);
+let savingPrin = 0;
+  // Calculate cumulative costs year by year
+  for (let i = 1; i <= years; i++) {
+    labels.push('Year ' + i);
 
-    // Calculate investment returns on monthly savings (Future Value of Annuity)
-    const monthlyRate = investmentRate / 12;
-    const investmentReturns = monthlySavings > 0 && monthlyRate > 0
-      ? monthlySavings * (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate
-      : monthlySavings * months;
+    let evYearlyCost = 0;
+    let iceYearlyCost = 0;
+	
 
-    // Calculate loan interest on delta (using simple interest for clarity)
-    const loanInterest = Math.abs(priceDelta) * loanRate * year;
-
-    // TCO Calculation
-    if (priceDelta < 0) {
-      // EV is more expensive initially
-      // EV TCO = Delta + EV Running Costs - savings
-	  if(year===1) {
-	  evCumm = evCumm + Math.abs(priceDelta) + evYearly + loanInterYearly - maturMedYearly
-	  }
-	  else{
-	  evCumm = evCumm +  evYearly + loanInterYearly - maturMedYearly
-	  }
-	 
-	  evData.push(evCumm);
-      // ICE TCO = ICE Running Costs only
-	  iceCumm = iceCumm + iceYearly;
-      iceData.push(iceCumm);
+    if (hasLoan && i <= loanYears) {
+      // During loan period: EMI + Running costs
+      evYearlyCost = (evEMI * 12) + (evMonthly * 12);
+      iceYearlyCost = (iceEMI * 12) + (iceMonthly * 12);
+	  savingPrin = savingPrin+(iceYearlyCost - evYearlyCost);
     } else {
-      // ICE is more expensive initially
-      // EV TCO = EV Running Costs only
-	  evCumm = evCumm + evYearly + loanInterYearly - maturMedYearly
-      evData.push(evCumm);
-      // ICE TCO = Delta + ICE Running Costs + Loan Interest - Investment Returns on Savings
-	  if(year===1) {
-	  iceCumm = iceCumm + Math.abs(priceDelta) + iceYearly
-	  }
-	  else{
-	  iceCumm = iceCumm + iceYearly
-	  }
-	  
-      iceData.push(iceCumm);
+      // After loan or no loan: Only running costs
+      evYearlyCost = evMonthly * 12;
+      iceYearlyCost = iceMonthly * 12;
+	  savingPrin = savingPrin+(iceYearlyCost - evYearlyCost);
     }
+
+    // Cumulative total
+    evData.push(evData[i-1] + evYearlyCost);
+    iceData.push(iceData[i-1] + iceYearlyCost);
   }
 
-  console.log('Chart data prepared:', {labels, evData, iceData});
+  // Subtract investment returns from EV (if user is saving money by going EV)
+  const yearlyInvestmentReturn = (maturMed - savingPrin) / years;
+  for (let i = 1; i <= years; i++) {
+    evData[i] -= yearlyInvestmentReturn;
+  }
 
-  // Find breakeven in months
-  let breakevenMonths = null;
-  const totalMonths = years * 12;
+  // Subtract resale values at final year
+  //evData[years] -= resEv;
+  //iceData[years] -= resIce;
 
-  // Calculate month-by-month TCO for precise breakeven
-  let evCummMonth = priceDelta < 0 ? Math.abs(priceDelta) : 0;
-  let iceCummMonth = priceDelta < 0 ? 0 : Math.abs(priceDelta);
+  // Convert to lakhs for better readability
+  const evDataLakhs = evData.map(v => v / 100000);
+  const iceDataLakhs = iceData.map(v => v / 100000);
 
-  for (let month = 1; month <= totalMonths; month++) {
-    evCummMonth += (evYearly / 12) + (loanInter / totalMonths) - ((maturMed / totalMonths)-monthlySavings);
-    iceCummMonth += (iceYearly / 12);
+  console.log('Chart data prepared:', {evDataLakhs, iceDataLakhs});
 
-    if (evCummMonth < iceCummMonth && breakevenMonths === null) {
-      breakevenMonths = month;
+  // Find breakeven point
+  let breakeven = null;
+  for (let i = 1; i < evData.length; i++) {
+    if (evData[i] < iceData[i]) {
+      breakeven = i;
       break;
     }
   }
-
-  // Update breakeven text
+ // Update breakeven text
   const breakevenSpan = document.getElementById('breakevenText');
   const breakevenDiv = document.getElementById('breakevenInfo');
-
-  if (breakevenSpan) {
-    if (priceDelta > 0) {
+ const saveDuringLoanVal = ((iceEMI * 12) + (iceMonthly * 12)) - ((evEMI * 12) + (evMonthly * 12) );
+   if (breakevenSpan) {
+    if (saveDuringLoanVal > 0) {
 	 breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
         breakevenDiv.style.borderColor = '#28a745';
       }
-    } else if (breakevenMonths) {
-      const breakevenYears = Math.floor(breakevenMonths / 12);
-      const remainingMonths = breakevenMonths % 12;
-
-      let displayText = '';
-      if (breakevenYears > 0 && remainingMonths > 0) {
-        displayText = breakevenYears + ' Year' + (breakevenYears > 1 ? 's' : '') + ' ' + remainingMonths + ' Month' + (remainingMonths > 1 ? 's' : '');
-      } else if (breakevenYears > 0) {
-        displayText = breakevenYears + ' Year' + (breakevenYears > 1 ? 's' : '');
-      } else {
-        displayText = breakevenMonths + ' Month' + (breakevenMonths > 1 ? 's' : '');
-      }
-
-      breakevenSpan.textContent = displayText;
+    }else if (breakeven) {
+      
+      breakevenSpan.textContent = breakeven + ' Year' + (breakeven > 1 ? 's' : '');
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
         breakevenDiv.style.borderColor = '#28a745';
@@ -1654,56 +1630,51 @@ function updateTCOChart() {
         breakevenDiv.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%)';
         breakevenDiv.style.borderColor = '#ffc107';
       }
-    }
-  }
-
-  // Destroy old chart
-  if (tcoChart) {
-    console.log('Destroying old chart');
-    tcoChart.destroy();
-  }
-
-  // Get canvas
-  const ctx = document.getElementById('tcoChart');
-  if (!ctx) {
-    console.error('Canvas element #tcoChart not found!');
+	}
+	}
+  // Destroy existing chart if it exists
+  const canvas = document.getElementById('tcoChart');
+  if (!canvas) {
+    console.log('Chart canvas not found');
     return;
   }
 
-  console.log('Creating chart...');
+  if (window.tcoChart instanceof Chart) {
+    window.tcoChart.destroy();
+  }
 
-  // Create chart
-  tcoChart = new Chart(ctx, {
+  const ctx = canvas.getContext('2d');
+  window.tcoChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
-      datasets: [{
-        label: 'EV Total Cost',
-        data: evData,
-        borderColor: '#34a853',
-        backgroundColor: 'rgba(52, 168, 83, 0.1)',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        pointBackgroundColor: '#34a853',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2
-      }, {
-        label: 'ICE Total Cost',
-        data: iceData,
-        borderColor: '#ea4335',
-        backgroundColor: 'rgba(234, 67, 53, 0.1)',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        pointBackgroundColor: '#ea4335',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2
-      }]
+      datasets: [
+        {
+          label: 'EV Total Cost',
+          data: evDataLakhs,
+          borderColor: '#34a853',
+          backgroundColor: 'rgba(52, 168, 83, 0.1)',
+          tension: 0.4,
+          fill: true,
+          borderWidth: 3,
+          pointStyle: 'circle',
+          pointRadius: 5,
+          pointBorderWidth: 2,
+          pointHoverRadius: 7
+        },
+        {
+          label: 'ICE Total Cost',
+          data: iceDataLakhs,
+          borderColor: '#ea4335',
+          backgroundColor: 'rgba(234, 67, 53, 0.1)',
+          tension: 0.4,
+          fill: true,
+          borderWidth: 3,
+          pointRadius: 5,
+          pointBorderWidth: 2,
+          pointHoverRadius: 7
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -1725,14 +1696,14 @@ function updateTCOChart() {
         },
         tooltip: {
           backgroundColor: 'rgba(0,0,0,0.8)',
-          padding: 15,
+          padding: window.innerWidth < 768 ? 10 : 15,
           titleFont: { size: window.innerWidth < 768 ? 12 : 15, weight: 'bold' },
           bodyFont: { size: window.innerWidth < 768 ? 11 : 14 },
           cornerRadius: 8,
           displayColors: true,
           callbacks: {
             label: function(ctx) {
-              return ctx.dataset.label + ': ₹' + (ctx.parsed.y / 100000).toFixed(2) + ' Lakhs';
+              return ctx.dataset.label + ': ₹' + (ctx.parsed.y).toFixed(2) + ' Lakhs';
             }
           }
         }
@@ -1743,47 +1714,41 @@ function updateTCOChart() {
           title: {
             display: true,
             text: window.innerWidth < 768 ? 'Cost (₹L)' : 'Cumulative Cost (₹ Lakhs)',
-            font: { size: window.innerWidth < 768 ? 10 : 14, weight: '600' },
-            color: '#333'
-          },
-          ticks: {
-            font: { size: 13 },
-            color: '#666',
-            callback: function(val) {
-              return '₹' + (val / 100000).toFixed(1) + 'L';
-            }
+            font: { size: window.innerWidth < 768 ? 11 : 14, weight: 'bold' }
           },
           grid: {
-            color: 'rgba(0,0,0,0.05)'
+            color: '#e5e7eb'
+          },
+          ticks: {
+            font: { size: window.innerWidth < 768 ? 9 : 12 },
+            callback: function(value) {
+              return '₹' + value.toFixed(1) + 'L';
+            }
           }
         },
         x: {
           title: {
             display: true,
             text: 'Ownership Period',
-            font: { size: window.innerWidth < 768 ? 10 : 14, weight: '600' },
-            color: '#333'
-          },
-          ticks: {
-            font: { size: 13 },
-            color: '#666'
+            font: { size: window.innerWidth < 768 ? 11 : 14, weight: 'bold' }
           },
           grid: {
-            display: false
+            color: '#e5e7eb'
+          },
+          ticks: {
+            font: { size: window.innerWidth < 768 ? 9 : 12 }
           }
         }
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index'
       }
     }
   });
-    if (breakevenMonths) addBreakevenMarker(tcoChart, breakevenMonths, years);
-    highlightSavings();
-    displayInsightBadges(breakevenMonths);
 
-  console.log('Chart created successfully!');
+  // Add breakeven marker
+  if (breakeven) {
+    addBreakevenMarker(window.tcoChart, breakeven * 12, years);
+  }
+
+  console.log('Chart created successfully');
 }
 
 // Hook to recalc function if it exists
