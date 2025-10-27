@@ -1866,26 +1866,35 @@ window.addEventListener('load', function() {
     chart.update('none');
   }
 
-  function highlightSavings() {
-    const monthlySavings = document.getElementById('savingsMonth');
-    if (monthlySavings) {
-      const value = parseFloat(monthlySavings.textContent.replace(/[^0-9.-]/g, ''));
-      if (value > 0) monthlySavings.classList.add('key-number', 'savings-positive');
-      else if (value < 0) monthlySavings.classList.add('key-number', 'savings-negative');
-    }
-    const allCells = document.querySelectorAll('td');
-    allCells.forEach((td, index) => {
-      if (td.textContent.includes('Overall Net Savings')) {
-        const valueTd = allCells[index + 1];
-        if (valueTd) {
-          valueTd.classList.add('hero-number');
-          const value = parseFloat(valueTd.textContent.replace(/[^0-9.-]/g, ''));
-          if (value > 0) valueTd.classList.add('savings-positive');
-          else if (value < 0) valueTd.classList.add('savings-negative');
-        }
-      }
-    });
+function highlightSavings() {
+  // Highlight monthly savings
+  const monthlySavings = document.getElementById('savingsMonth');
+  if (monthlySavings) {
+    const value = parseFloat(monthlySavings.textContent.replace(/[^0-9.-]/g, ''));
+    // Remove old classes first
+    monthlySavings.classList.remove('key-number', 'savings-positive', 'savings-negative', 'positive-value', 'negative-value');
+    if (value > 0) monthlySavings.classList.add('key-number', 'savings-positive');
+    else if (value < 0) monthlySavings.classList.add('key-number', 'savings-negative');
   }
+  
+  // Highlight overall net savings
+  const allCells = document.querySelectorAll('td');
+  allCells.forEach((td, index) => {
+    if (td.textContent.includes('Overall Net Savings')) {
+      const valueTd = allCells[index + 1];
+      if (valueTd) {
+        // CRITICAL FIX: Remove ALL color classes first
+        valueTd.classList.remove('hero-number', 'savings-positive', 'savings-negative', 'positive-value', 'negative-value');
+        
+        valueTd.classList.add('hero-number');
+        const value = parseFloat(valueTd.textContent.replace(/[^0-9.-]/g, ''));
+        if (value > 0) valueTd.classList.add('savings-positive');
+        else if (value < 0) valueTd.classList.add('savings-negative');
+      }
+    }
+  });
+}
+
 
   function generateInsightBadges(breakevenMonths) {
     const breakevenText = document.getElementById('breakevenText')?.textContent || '';
