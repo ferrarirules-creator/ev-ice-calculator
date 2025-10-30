@@ -425,100 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-<script>
-// Copyright Protection Script
-(function() {
-  'use strict';
 
-  // Disable right-click context menu
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-  }, false);
-
-  // Disable keyboard shortcuts for viewing/saving source
-  document.addEventListener('keydown', function(e) {
-    // Ctrl+U (View Source)
-    if (e.ctrlKey && e.keyCode === 85) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+S (Save Page)
-    if (e.ctrlKey && e.keyCode === 83) {
-      e.preventDefault();
-      return false;
-    }
-    // F12 (Developer Tools)
-    if (e.keyCode === 123) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+Shift+I (DevTools)
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+Shift+J (Console)
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
-      e.preventDefault();
-      return false;
-    }
-    // Ctrl+Shift+C (Inspect Element)
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
-      e.preventDefault();
-      return false;
-    }
-  }, false);
-
-  // Disable text selection (but allow in input fields)
-  document.addEventListener('selectstart', function(e) {
-    if (e.target.tagName === 'INPUT' || 
-        e.target.tagName === 'SELECT' || 
-        e.target.tagName === 'TEXTAREA') {
-      return true;
-    }
-    e.preventDefault();
-    return false;
-  }, false);
-
-  // Disable drag and drop
-  document.addEventListener('dragstart', function(e) {
-    e.preventDefault();
-    return false;
-  }, false);
-
-  // Console copyright warning
-  console.clear();
-  console.log('%c⚠️ COPYRIGHT NOTICE ⚠️', 
-    'color: red; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);');
-  console.log('%c© 2025 EV vs ICE Ownership Cost Calculator', 
-    'font-size: 16px; font-weight: bold; color: #34a853;');
-  console.log('%cAll Rights Reserved', 
-    'font-size: 14px; color: #666;');
-  console.log('%cThis calculator is proprietary software.', 
-    'font-size: 12px; color: #333;');
-  console.log('%cUnauthorized copying, modification, or distribution is prohibited.', 
-    'font-size: 12px; color: #d32f2f; font-weight: bold;');
-  console.log('%cIf youre interested in using this calculator, please contact the owner.', 
-    'font-size: 11px; color: #666; font-style: italic;');
-
-  // Detect DevTools open (basic detection)
-  var devtools = {open: false};
-  var threshold = 160;
-  var check = setInterval(function() {
-    if (window.outerWidth - window.innerWidth > threshold || 
-        window.outerHeight - window.innerHeight > threshold) {
-      if (!devtools.open) {
-        console.clear();
-        console.log('%c⚠️ Developer Tools Detected', 'color: red; font-size: 20px; font-weight: bold;');
-        console.log('%cThis calculator is copyright protected.', 'font-size: 14px;');
-      }
-      devtools.open = true;
-    }
-  }, 500);
-
-})();
-</script>
 <table>
     <!-- Driving Parameters -->
     <tr><td colspan="5" class="section-header">🚗 Driving Parameters</td></tr>
@@ -1592,6 +1499,102 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+<script>
+// Copyright Protection Script
+(function() {
+  'use strict';
+
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  }, false);
+
+  // Disable keyboard shortcuts for viewing/saving source
+  document.addEventListener('keydown', function(e) {
+    // Ctrl+U (View Source)
+    if (e.ctrlKey && e.keyCode === 85) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+S (Save Page)
+    if (e.ctrlKey && e.keyCode === 83) {
+      e.preventDefault();
+      return false;
+    }
+    // F12 (Developer Tools)
+    if (e.keyCode === 123) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+I (DevTools)
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+C (Inspect Element)
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+      e.preventDefault();
+      return false;
+    }
+  }, false);
+
+  // Disable text selection (but allow in input fields)
+  document.addEventListener('selectstart', function(e) {
+    if (e.target.tagName === 'INPUT' || 
+        e.target.tagName === 'SELECT' || 
+        e.target.tagName === 'TEXTAREA') {
+      return true;
+    }
+    e.preventDefault();
+    return false;
+  }, false);
+
+  // Disable drag and drop
+  document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+    return false;
+  }, false);
+
+  // Console copyright warning
+  console.clear();
+  console.log('%c⚠️ COPYRIGHT NOTICE ⚠️', 
+    'color: red; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);');
+  console.log('%c© 2025 EV vs ICE Ownership Cost Calculator', 
+    'font-size: 16px; font-weight: bold; color: #34a853;');
+  console.log('%cAll Rights Reserved', 
+    'font-size: 14px; color: #666;');
+  console.log('%cThis calculator is proprietary software.', 
+    'font-size: 12px; color: #333;');
+  console.log('%cUnauthorized copying, modification, or distribution is prohibited.', 
+    'font-size: 12px; color: #d32f2f; font-weight: bold;');
+  console.log('%cIf youre interested in using this calculator, please contact the owner.', 
+    'font-size: 11px; color: #666; font-style: italic;');
+
+  // Detect DevTools open (basic detection)
+  var devtools = {open: false};
+  var threshold = 160;
+  var check = setInterval(function() {
+    if (window.outerWidth - window.innerWidth > threshold || 
+        window.outerHeight - window.innerHeight > threshold) {
+      if (!devtools.open) {
+        console.clear();
+        console.log('%c⚠️ Developer Tools Detected', 'color: red; font-size: 20px; font-weight: bold;');
+        console.log('%cThis calculator is copyright protected.', 'font-size: 14px;');
+      }
+      devtools.open = true;
+    }
+  }, 500);
+
+})();
+</script>
+
+
 
 <script>
 // TCO Chart Generation
@@ -1603,7 +1606,8 @@ function updateTCOChart() {
   const years = parseFloat(document.getElementById('years')?.value) || 7;
   const loanTenure = parseFloat(document.getElementById('loanTenure')?.value) || 0;
   const downAmt = parseIndian(document.getElementById('downAmt')?.value) || 0;
-
+  const deltaElem = document.getElementById('delta');
+  const deltaAmt = deltaElem ? parseFloat(deltaElem.textContent.replace(/[^0-9.]/g, '')) || 0 : 0; 
   // Get on-road prices
   const evOnroad = parseIndian(document.getElementById('onroadEv')?.textContent) || 0;
   const iceOnroad = parseIndian(document.getElementById('onroadIce')?.textContent) || 0;
@@ -1647,7 +1651,12 @@ function updateTCOChart() {
   const labels = ['Purchase'];
 
   // Year 0: Down payment
+	if(hasLoan){
   evData.push(downAmt);
+	}else{
+		evData.push(Math.abs(deltaAmt));
+	}
+	
   iceData.push(downAmt);
 let savingPrin = 0;
   // Calculate cumulative costs year by year
@@ -1704,7 +1713,7 @@ let savingPrin = 0;
   const breakevenDiv = document.getElementById('breakevenInfo');
  const saveDuringLoanVal = ((iceEMI * 12) + (iceMonthly * 12)) - ((evEMI * 12) + (evMonthly * 12) );
    if (breakevenSpan) {
-    if (saveDuringLoanVal > 0) {
+    if (saveDuringLoanVal > 0 && hasLoan) {
 	 breakevenSpan.textContent = 'EV is cheaper from Day 1! 🎉';
       if (breakevenDiv) {
         breakevenDiv.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
