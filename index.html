@@ -1086,12 +1086,7 @@ function formatIndian(num) {
   let lastThree = intPart.substring(intPart.length - 3);
   let otherNumbers = intPart.substring(0, intPart.length - 3);
   if (otherNumbers !== '') lastThree = ',' + lastThree;
-  if (otherNumbers !== ''){
   const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
-  }
-	else{
-		const formatted = lastThree;
-	}
   return decPart ? formatted + '.' + decPart : formatted;
 }
 
