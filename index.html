@@ -1398,8 +1398,8 @@ function recalc() {
 
   const evIns = evEx * 0.043;
   const iceIns = iceEx * 0.043;
-  const evTcs = evEx * 0.01;
-  const iceTcs = iceEx * 0.01;
+  const evTcs = if (evEx>1000000) evEx * 0.01 : 0;
+  const iceTcs = if (iceEx>1000000) iceEx * 0.01 : 0;
 
   const ePriceCity = parseIndian(document.getElementById('ePriceCity').value);
   const ePriceHwy = parseIndian(document.getElementById('ePriceHwy').value);
